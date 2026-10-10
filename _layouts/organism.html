@@ -1,0 +1,29 @@
+---
+layout: default
+---
+{% assign o = site.data.organisms | where: "slug", page.slug | first %}
+<a class="crumb" href="{{ '/research/' | relative_url }}">← Research</a>
+<header class="page-head">
+  <div class="kicker mono">{{ o.theme }}</div>
+  <h1><em>{{ o.name }}</em></h1>
+  <p class="lede-lg">{{ o.common }}</p>
+</header>
+
+{% if o.image != "" %}
+<figure class="lead-figure" style="margin-top:0">
+  <div class="media" style="border-radius:10px">
+    <img src="{% if o.image contains '://' %}{{ o.image }}{% else %}{{ o.image | relative_url }}{% endif %}" alt="{{ o.image_alt }}" onerror="this.closest('figure').remove()">
+  </div>
+  <figcaption>{{ o.image_caption }}{% if o.image_credit != "" %}<span class="credit">{% if o.image_credit_url != "" %}<a href="{{ o.image_credit_url }}">{{ o.image_credit }}</a>{% else %}{{ o.image_credit }}{% endif %}</span>{% endif %}</figcaption>
+</figure>
+{% endif %}
+
+<dl class="facts">
+  <div><dt>Methods</dt><dd>{{ o.methods | join: ', ' }}</dd></div>
+  {% if page.collaborators %}<div><dt>Collaborators</dt><dd>{{ page.collaborators }}</dd></div>{% endif %}
+  {% if page.status %}<div><dt>Status</dt><dd>{{ page.status }}</dd></div>{% endif %}
+</dl>
+
+<div class="prose">
+{{ content }}
+</div>

@@ -1,0 +1,75 @@
+# One entry per study system. Used by the research overview page and the homepage tiles.
+# To add a system: add an entry here and a page at research/<slug>/index.html.
+# image: a path in this repo (e.g. /images/research/x.png) or a full URL. If it fails to load,
+# the card shows the organism name instead.
+
+- slug: euprymna-scolopes
+  name: Euprymna scolopes
+  common: Hawaiian bobtail squid
+  theme: How hosts recruit their microbes
+  blurb: >-
+    Newly hatched squid use breathing and cilia-driven flows to capture their bioluminescent
+    bacterial partner from seawater. I model these flows to ask how heat stress changes that recruitment.
+  methods: [Computational fluid dynamics, Regularized Stokeslets, Sobol sensitivity analysis, Active Brownian motion]
+  image: https://commons.wikimedia.org/wiki/Special:FilePath/Hawaiian_Bobtail_squid.tiff?width=900
+  image_alt: A Hawaiian bobtail squid on a dark background
+  image_caption: 'The Hawaiian bobtail squid. Its light organ houses the bacterium <em>Vibrio fischeri</em>.'
+  image_credit: '"Hawaiian Bobtail squid", via Wikimedia Commons'
+  image_credit_url: https://commons.wikimedia.org/wiki/File:Hawaiian_Bobtail_squid.tiff
+
+- slug: vibrio-fischeri
+  name: Vibrio fischeri
+  common: Bioluminescent bacterial symbiont
+  theme: How microbes adapt to stress
+  blurb: >-
+    Free-living bacteria must balance surviving in the ocean against colonizing a host. I model how
+    stress selects for biofilm formation, and design the experiments that can measure it.
+  methods: [Trait-structured population models, Natural selection, Identifiability, Genetic algorithms]
+  image: /images/research/biofilms.png
+  image_alt: Diagram of biofilm formation responding to environmental stressors
+  image_caption: 'Biofilm formation responds to abiotic (temperature, pH, oxygen) and biotic (predators, local population) stressors.'
+  image_credit: 'Figure: Stephen Williams'
+  image_credit_url: ""
+
+- slug: exaiptasia-diaphana
+  name: Exaiptasia diaphana
+  common: Sea anemone, a model for coral bleaching
+  theme: How stressed host populations persist
+  blurb: >-
+    Exaiptasia hosts the same algae as reef-building corals and bleaches the same way. I build population
+    models of how heat stress, and the anemone's microbiome, shape its growth and reproduction.
+  methods: [Delay differential equations, Size-structured models, Generalized additive models, Identifiability]
+  image: ""
+  image_alt: ""
+  image_caption: ''
+  image_credit: ""
+  image_credit_url: ""
+
+- slug: cassiopea
+  name: Cassiopea
+  common: Upside-down jellyfish
+  theme: New project
+  label: New
+  blurb: >-
+    Another animal that lives with photosynthetic algae. With Kaden Muffett, I am using deep learning on
+    daily photographs to measure when Cassiopea polyps transform into juvenile jellyfish.
+  methods: [Deep-learning object detection, Image analysis, Time-series data]
+  image: ""
+  image_alt: ""
+  image_caption: ''
+  image_credit: ""
+  image_credit_url: ""
+
+- slug: chlamydomonas
+  name: Chlamydomonas reinhardtii
+  common: Swimming microalga
+  theme: Active–passive mixtures
+  blurb: >-
+    My PhD work: how swimming algae push passive particles around under confinement, and how to use
+    that to sort them. The physics behind how motile symbionts move near a host's surfaces.
+  methods: [Statistical physics, Active particles, Numerical simulation, Image analysis]
+  image: https://commons.wikimedia.org/wiki/Special:FilePath/Chlamydomonas_(10000x).jpg?width=900
+  image_alt: Electron micrograph of a Chlamydomonas cell with its two flagella
+  image_caption: '<em>Chlamydomonas</em>, a single-celled alga that swims with two flagella.'
+  image_credit: '"Chlamydomonas (10000x)", via Wikimedia Commons'
+  image_credit_url: https://commons.wikimedia.org/wiki/File:Chlamydomonas_(10000x).jpg

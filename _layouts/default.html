@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.summary %}{{ page.summary | strip_html | strip_newlines }}{% else %}{{ site.description | strip_newlines }}{% endif %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="site-name" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <nav aria-label="Main">
+      <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %} aria-current="page"{% endif %}>Research</a>
+      <a href="{{ '/updates/' | relative_url }}"{% if page.url contains '/updates/' %} aria-current="page"{% endif %}>Updates</a>
+      <a href="{{ '/#publications' | relative_url }}">Publications</a>
+      <a href="{{ '/#interactive' | relative_url }}">Interactive</a>
+      <a href="{{ '/files/Williams_CV.pdf' | relative_url }}">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+{{ content }}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© {{ site.time | date: '%Y' }} Stephen Williams</span>
+    <span>Department of Applied Mathematics, University of California, Merced</span>
+  </div>
+</footer>
+
+<script>
+  // Let embedded simulations report their height so the frame fits without inner scrollbars.
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'sim-height') return;
+    var frames = document.querySelectorAll('iframe.sim-frame');
+    for (var i = 0; i < frames.length; i++) {
+      if (frames[i].contentWindow === e.source) frames[i].style.height = Math.ceil(e.data.height) + 'px';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Site settings. GitHub Pages builds this site with Jekyll automatically on every push.
+title: Stephen Williams
+description: >-
+  Stephen Williams, applied mathematician at UC Merced. Mathematical models of how
+  host–microbe symbioses form and fail under climate stress.
+url: https://stephwilleniams.github.io
+baseurl: ""
+timezone: America/Los_Angeles
+
+# Each file in _posts/ becomes a page at /updates/<slug>/
+permalink: /updates/:title/
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+exclude:
+  - README.md
+  - files/README.md

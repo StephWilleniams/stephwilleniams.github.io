@@ -1,0 +1,44 @@
+---
+layout: default
+title: Research
+summary: Mathematical models of how host–microbe symbioses form and fail under stress, across five study systems.
+---
+<header class="page-head">
+  <div class="kicker mono">Research</div>
+  <h1>Modeling symbiosis under stress</h1>
+  <p class="lede-lg">Most animals and plants depend on microbial partners, and many of those partnerships are sensitive to warming. Failure can start at any scale: in the flows a host uses to recruit its microbes, in how the microbes adapt, or in how host populations cope. I build mechanistic models at each of these scales, then use sensitivity and identifiability analysis to show experimental collaborators which measurements matter most.</p>
+</header>
+
+<section aria-labelledby="systems">
+  <h2 id="systems">Study systems</h2>
+  <div class="cards">
+    {% for o in site.data.organisms %}
+    <a class="card" href="{{ '/research/' | append: o.slug | append: '/' | relative_url }}">
+      <div class="media">
+        {% if o.image != "" %}<img src="{% if o.image contains '://' %}{{ o.image }}{% else %}{{ o.image | relative_url }}{% endif %}" alt="{{ o.image_alt }}" loading="lazy" onerror="this.remove()">{% endif %}
+        <span class="fallback" aria-hidden="true">{{ o.name }}</span>
+      </div>
+      <div class="body">
+        <div class="kicker mono">{{ o.theme }}</div>
+        <h3><em>{{ o.name }}</em></h3>
+        <div class="mono" style="font-size:13px;color:var(--muted)">{{ o.common }}</div>
+        <p>{{ o.blurb }}</p>
+        <ul class="tags" aria-label="Methods">
+          {% for m in o.methods %}<li>{{ m }}</li>{% endfor %}
+        </ul>
+        <span class="more">Read more →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="approach">
+  <h2 id="approach">Approach</h2>
+  <div class="prose">
+    <p>I combine low-Reynolds-number fluid dynamics, population and trait-structured models, and data-driven inference, including machine-learning image analysis. The same toolkit runs through every project: build a model mechanistic enough to explain <em>why</em> a partnership breaks down, then ask which parameters can actually be measured, and which experiments would pin them down, so it can predict <em>when</em>.</p>
+    <p>All of this work is done in close collaboration with experimental labs: the Heath-Heckman lab (Michigan State), the Nishiguchi lab (UC Merced) and the Sogin lab (UC Riverside), through NSF INSITE, the Institute for Symbiotic Interactions, Training, and Education in the Face of a Changing Climate.</p>
+  </div>
+</section>
+
+<p class="note">Image credits are given on each project page.</p>

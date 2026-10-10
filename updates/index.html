@@ -1,0 +1,29 @@
+---
+layout: default
+title: Updates
+summary: News, papers, talks, posters and teaching from Stephen Williams.
+---
+<header class="page-head">
+  <div class="kicker mono">Updates</div>
+  <h1>News, papers &amp; talks</h1>
+  <p class="lede-lg">New papers, talks, posters and teaching. Each has its own page with slides, code and links.</p>
+</header>
+
+<ul class="post-list">
+  {% assign prev_year = "" %}
+  {% for post in site.posts %}
+    {% assign year = post.date | date: "%Y" %}
+    {% if year != prev_year %}
+  <li class="year mono" aria-hidden="true">{{ year }}</li>
+      {% assign prev_year = year %}
+    {% endif %}
+  <li class="entry">
+    <span class="date mono">{{ post.date | date: "%b %Y" }}</span>
+    <div class="text">
+      {% if post.kind %}<div class="kind mono">{{ post.kind }}</div>{% endif %}
+      <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>

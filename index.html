@@ -1,151 +1,7 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Stephen Williams · Applied Mathematics, UC Merced</title>
-  <meta name="description" content="Stephen Williams, postdoctoral researcher in applied mathematics at UC Merced. Mathematical models of how host–microbe symbioses form and fail under climate stress.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #16202A;
-      --ink-2: #3D4955;
-      --muted: #5B6672;
-      --line: #E3E7EC;
-      --line-2: #C9D1DA;
-      --bg: #FFFFFF;
-      --panel: #F8FAFB;
-      --placeholder: #EEF1F4;
-      --accent: #0B4F8A;
-      --accent-hover: #06335C;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'IBM Plex Sans', system-ui, sans-serif;
-      font-size: 16px;
-      line-height: 1.6;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { color: var(--accent-hover); text-decoration: underline; }
-    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
-    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
-
-    /* Header */
-    header { border-bottom: 1px solid var(--line); }
-    header .wrap {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-      gap: 12px 32px; padding-top: 18px; padding-bottom: 18px;
-    }
-    .site-name { font-weight: 600; font-size: 18px; color: var(--ink); }
-    nav { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 15px; }
-    nav a { color: var(--ink-2); padding: 10px 0; }
-
-    section { border-top: 1px solid var(--line); padding: 48px 0; }
-    section:first-of-type { border-top: 0; }
-    h2 { margin: 0 0 24px; font-size: 24px; font-weight: 600; line-height: 1.3; }
-    h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; line-height: 1.4; }
-    .lede { margin: -16px 0 24px; color: var(--ink-2); max-width: 680px; }
-
-    /* Hero */
-    .hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 64px 0 56px; }
-    .headshot {
-      flex: 0 0 200px; height: 240px; border-radius: 10px; object-fit: cover;
-      background: var(--placeholder); display: flex; align-items: center; justify-content: center;
-      color: var(--muted); font-size: 14px;
-    }
-    .hero-text { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-    .kicker { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
-    h1 { margin: 0; font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; }
-    .bio { margin: 0; font-size: 18px; color: var(--ink-2); max-width: 680px; }
-    .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; padding-top: 4px; }
-
-    /* Research */
-    .themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .theme { border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--bg); }
-    .theme p { margin: 0; color: var(--ink-2); font-size: 15px; }
-    .theme .refs { margin-top: 14px; font-size: 14px; }
-    .tag { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-
-    /* News */
-    .news { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-    .news li { display: flex; flex-wrap: wrap; gap: 4px 24px; line-height: 1.5; }
-    .news .date { flex: 0 0 96px; font-size: 14px; color: var(--muted); padding-top: 2px; }
-    .news .item { flex: 1 1 400px; min-width: 0; }
-
-    /* Publications */
-    .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
-    .section-head h2 { margin: 0; }
-    .pubs { display: flex; flex-direction: column; gap: 28px; }
-    .pub h3 { margin-bottom: 6px; }
-    .pub .meta { font-size: 15px; color: var(--ink-2); line-height: 1.5; }
-    .pub .me { font-weight: 600; color: var(--ink); }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
-    .chips a {
-      font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;
-      padding: 6px 12px; border: 1px solid var(--line-2); border-radius: 6px; color: var(--ink);
-    }
-    .chips a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
-    .subhead { margin: 36px 0 14px; font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .plain { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 15px; display: flex; flex-direction: column; gap: 8px; }
-    .note { font-size: 14px; color: var(--muted); margin-top: 16px; }
-
-    /* Embedded simulation */
-    .sim-frame {
-      display: block; width: 100%; height: 600px; border: 1px solid var(--line);
-      border-radius: 12px; background: var(--panel);
-    }
-    .sim-caption { margin-top: 10px; font-size: 14px; color: var(--muted); }
-
-    /* Tables */
-    .table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
-    table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
-    th { background: var(--panel); text-align: left; font-weight: 600; padding: 12px 16px; }
-    td { padding: 14px 16px; border-top: 1px solid var(--line); vertical-align: top; }
-    td.muted { color: var(--ink-2); }
-    td.date { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: var(--muted); white-space: nowrap; }
-
-    /* Positions */
-    .cv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
-    .cv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
-    .cv-list .when { font-size: 13px; color: var(--muted); }
-    .cv-list .what { font-weight: 600; }
-    .cv-list .where { color: var(--ink-2); font-size: 15px; }
-
-    footer { border-top: 1px solid var(--line); margin-top: 16px; }
-    footer .wrap {
-      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
-      padding-top: 28px; padding-bottom: 40px; font-size: 14px; color: var(--muted);
-    }
-
-    @media (max-width: 560px) {
-      h1 { font-size: 34px; }
-      .headshot { flex-basis: 100%; height: 220px; }
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <div class="wrap">
-    <a class="site-name" href="#top">Stephen Williams</a>
-    <nav aria-label="Main">
-      <a href="#research">Research</a>
-      <a href="#publications">Publications</a>
-      <a href="#interactive">Interactive</a>
-      <a href="#talks">Talks</a>
-      <a href="#news">News</a>
-      <a href="#cv">CV</a>
-    </nav>
-  </div>
-</header>
-
-<main id="top" class="wrap">
+---
+layout: default
+---
+<div id="top"></div>
 
   <section class="hero" id="about">
     <!-- Replace with: <img class="headshot" src="images/headshot.jpg" alt="Stephen Williams"> -->
@@ -166,38 +22,36 @@
   </section>
 
   <section id="research">
-    <h2>Research</h2>
-    <p class="lede">Symbioses can fail at any scale: in the flows a host uses to recruit its microbes, in how microbes adapt to stress, or in host populations. I build mechanistic models at each scale, then use sensitivity and identifiability analysis to show experimental collaborators which measurements matter most.</p>
-    <div class="themes">
-      <article class="theme">
-        <div class="tag mono">Fluid dynamics</div>
-        <h3>Symbiont recruitment in the bobtail squid</h3>
-        <p>Newly hatched bobtail squid draw in their bacterial partners using breathing-driven flows. With the Heath-Heckman lab (Michigan State), I built a regularized-Stokeslet model of these flows inside the squid. It shows that the shallow, rapid breathing of heat-stressed squid can halve the time bacteria spend near the light organ.</p>
-        <div class="refs"><a href="https://doi.org/10.1098/rsif.2025.1136">J. R. Soc. Interface (2026)</a> · <a href="https://github.com/StephWilleniams/SquidInternalFlows">Code</a></div>
-      </article>
-      <article class="theme">
-        <div class="tag mono">Inference</div>
-        <h3>Models of microbes and hosts under stress</h3>
-        <p>With the Nishiguchi lab, I analyzed the identifiability of a <em>V. fischeri</em> biofilm model, using a genetic algorithm to design sampling schedules: 11 optimized time points beat 51 evenly spaced ones. With the Sogin lab, I study heat stress in <em>Exaiptasia</em>, where shifts in rare bacterial taxa precede the host's own decline.</p>
-        <div class="refs"><a href="https://doi.org/10.1007/s11538-026-01693-5">Bull. Math. Biol. (2026)</a> · <a href="https://doi.org/10.1101/2025.09.18.677205">Nat. Commun. (in press)</a></div>
-      </article>
-      <article class="theme">
-        <div class="tag mono">Active matter</div>
-        <h3>Active–passive mixtures in confinement</h3>
-        <p>In my PhD, I combined swimming microalgae and passive colloids in microfluidic channels, showing that confinement alone drives colloids to pile up at the walls, which we used to de-mix the two experimentally. I am now generalizing this to other microswimmers and to the living boundaries of hosts.</p>
-        <div class="refs"><a href="https://doi.org/10.1038/s41467-022-32520-9">Nat. Commun. (2022)</a> · <a href="https://github.com/StephWilleniams/ActivePassiveConfinement">Code</a></div>
-      </article>
+    <div class="section-head">
+      <h2>Research</h2>
+      <a href="{{ '/research/' | relative_url }}">All research →</a>
+    </div>
+    <p class="lede" style="margin-top:-8px">Symbioses can fail at any scale: in the flows a host uses to recruit its microbes, in how microbes adapt to stress, or in host populations. I build mechanistic models at each scale, then use sensitivity and identifiability analysis to show experimental collaborators which measurements matter most.</p>
+    <div class="cards compact">
+      {% for o in site.data.organisms %}
+      <a class="card" href="{{ '/research/' | append: o.slug | append: '/' | relative_url }}">
+        <div class="media">
+          {% if o.image != "" %}<img src="{% if o.image contains '://' %}{{ o.image }}{% else %}{{ o.image | relative_url }}{% endif %}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+          <span class="fallback" aria-hidden="true">{{ o.name }}</span>
+        </div>
+        <div class="body">
+          <h3><em>{{ o.name }}</em></h3>
+          <p>{{ o.theme }}</p>
+        </div>
+      </a>
+      {% endfor %}
     </div>
   </section>
 
   <section id="news">
-    <h2>News</h2>
+    <div class="section-head">
+      <h2>News</h2>
+      <a href="{{ '/updates/' | relative_url }}">All updates →</a>
+    </div>
     <ul class="news">
-      <li><span class="date mono">2026</span><span class="item">Our study of the <em>Exaiptasia</em> microbiome under temperature stress, led by K. M. Muffett, is in press at <em>Nature Communications</em>. <a href="https://doi.org/10.1101/2025.09.18.677205">Preprint →</a></span></li>
-      <li><span class="date mono">Jun 2026</span><span class="item">Contributed talk and travel award at CassiopeaBase MATH-BIO 2026, Key Largo, FL.</span></li>
-      <li><span class="date mono">2026</span><span class="item">Two papers out: squid breathing flows under thermal stress in <a href="https://doi.org/10.1098/rsif.2025.1136"><em>J. R. Soc. Interface</em></a>, and biofilm model identifiability in <a href="https://doi.org/10.1007/s11538-026-01693-5"><em>Bull. Math. Biol.</em></a></span></li>
-      <li><span class="date mono">Mar 2026</span><span class="item">Invited talk at the Spring AMS Western Sectional Meeting, Boise, ID.</span></li>
-      <li><span class="date mono">Oct 2025</span><span class="item">Seminar at the Interdisciplinary Center for Quantitative Modeling in Biology, UC Riverside.</span></li>
+      {% for post in site.posts limit:5 %}
+      <li><span class="date mono">{{ post.date | date: "%b %Y" }}</span><span class="item"><a href="{{ post.url | relative_url }}">{{ post.title }}</a>{% if post.summary %} · {{ post.summary }}{% endif %}</span></li>
+      {% endfor %}
     </ul>
   </section>
 
@@ -278,27 +132,3 @@
     </div>
     <p class="note"><a href="files/Williams_CV.pdf">Full CV (PDF) →</a></p>
   </section>
-
-</main>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 Stephen Williams</span>
-    <span>Department of Applied Mathematics, University of California, Merced</span>
-  </div>
-</footer>
-
-<script>
-  // Let embedded simulations report their height so the frame fits without inner scrollbars.
-  window.addEventListener('message', function (e) {
-    if (!e.data || e.data.type !== 'sim-height') return;
-    var frames = document.querySelectorAll('iframe.sim-frame');
-    for (var i = 0; i < frames.length; i++) {
-      if (frames[i].contentWindow === e.source) {
-        frames[i].style.height = Math.ceil(e.data.height) + 'px';
-      }
-    }
-  });
-</script>
-</body>
-</html>
