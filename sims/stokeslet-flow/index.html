@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Regularized Stokeslets · Stephen Williams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #16202A; --ink-2: #3D4955; --muted: #5B6672;
+      --line: #E3E7EC; --line-2: #C9D1DA; --panel: #F8FAFB; --accent: #0B4F8A;
+      --force: #D9661F;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--panel); color: var(--ink); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .app { display: flex; flex-wrap: wrap; gap: 24px; padding: 20px; }
+    .stage { flex: 2 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    .canvas-box { position: relative; width: 100%; aspect-ratio: 1.6; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    canvas { display: block; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+    .empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); pointer-events: none; text-align: center; padding: 16px; }
+    .legend { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+    .ramp { display: flex; align-items: center; gap: 8px; }
+    .ramp .bar { width: 120px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #F4F8FC, #C9DCEF, #8FB3D9, #4F7FB4, #2B5C93); border: 1px solid var(--line); }
+    .controls { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+    .hint { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { display: flex; justify-content: space-between; gap: 8px; }
+    select {
+      font: inherit; color: var(--ink); background: #fff; min-height: 44px; padding: 0 12px;
+      border: 1px solid var(--line-2); border-radius: 8px;
+    }
+    input[type=range] { width: 100%; height: 28px; accent-color: var(--accent); }
+    input:disabled, select:disabled { opacity: 0.45; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    button {
+      min-height: 44px; padding: 0 16px; font: inherit; color: var(--ink);
+      background: #fff; border: 1px solid var(--line-2); border-radius: 8px; cursor: pointer;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    button:disabled { opacity: 0.45; cursor: default; }
+    .toggles { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
+    .toggles label { display: flex; align-items: center; gap: 6px; min-height: 32px; cursor: pointer; }
+    .toggles input { width: 18px; height: 18px; accent-color: var(--accent); }
+    .eq { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React from a CDN: no build step needed. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script>
+    var h = React.createElement;
+    var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef;
+
+    // ---------- Physics: 2D regularized Stokeslet (Cortez 2001), viscosity mu = 1 ----------
+    var DOMAIN = { xmin: -2, xmax: 2, ymin: -1.25, ymax: 1.25 };
+    var EPS = 0.05;        // regularization (blob) size
+    var LREF = 4;          // reference length fixing the 2D log's additive constant (Stokes paradox)
+    var K = 1 / (4 * Math.PI);
+
+    function velocity(x, y, sts) {
+      var u = 0, v = 0, e = EPS;
+      for (var i = 0; i < sts.length; i++) {
+        var s = sts[i];
+        var a = s.angle * Math.PI / 180;
+        var fx = s.strength * Math.cos(a), fy = s.strength * Math.sin(a);
+        var dx = x - s.x, dy = y - s.y;
+        var R = Math.sqrt(dx * dx + dy * dy + e * e);
+        var t1 = Math.log((R + e) / LREF) - e * (R + 2 * e) / (R * (R + e));
+        var t2 = (fx * dx + fy * dy) * (R + 2 * e) / (R * (R + e) * (R + e));
+        u += -fx * t1 + t2 * dx;
+        v += -fy * t1 + t2 * dy;
+      }
+      return [K * u, K * v];
+    }
+
+    // ---------- Color ramp for speed ----------
+    var RAMP = [[244,248,252],[201,220,239],[143,179,217],[79,127,180],[43,92,147]];
+    function rampColor(t) {
+      t = Math.max(0, Math.min(1, t)) * (RAMP.length - 1);
+      var i = Math.min(RAMP.length - 2, Math.floor(t)), f = t - i;
+      var a = RAMP[i], b = RAMP[i + 1];
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+    }
+
+    var nextId = 1;
+    function makeStokeslet(x, y, strength, angle) {
+      return { id: nextId++, x: x, y: y, strength: strength, angle: angle };
+    }
+    function round2(v) { return Math.round(v * 100) / 100; }
+
+    // ---------- Canvas view (imperative drawing; React owns the controls) ----------
+    function FlowCanvas(props) {
+      var canvasRef = useRef(null);
+      var staticRef = useRef(null);     // offscreen layer: speed map + arrows
+      var stateRef = useRef(props);     // latest props for the animation loop
+      var sizeRef = useRef({ w: 0, h: 0, dpr: 1 });
+      var particlesRef = useRef([]);
+      var dragRef = useRef(null);
+      stateRef.current = props;
+
+      function toPx(x, y) {
+        var s = sizeRef.current;
+        return [(x - DOMAIN.xmin) / (DOMAIN.xmax - DOMAIN.xmin) * s.w,
+                (DOMAIN.ymax - y) / (DOMAIN.ymax - DOMAIN.ymin) * s.h];
+      }
+      function toDomain(px, py) {
+        var s = sizeRef.current;
+        return [DOMAIN.xmin + px / s.w * (DOMAIN.xmax - DOMAIN.xmin),
+                DOMAIN.ymax - py / s.h * (DOMAIN.ymax - DOMAIN.ymin)];
+      }
+
+      function randomParticle() {
+        var x = DOMAIN.xmin + Math.random() * (DOMAIN.xmax - DOMAIN.xmin);
+        var y = DOMAIN.ymin + Math.random() * (DOMAIN.ymax - DOMAIN.ymin);
+        return { trail: [[x, y]], age: 0, life: 120 + Math.random() * 240 };
+      }
+
+      // Rebuild the static layer whenever the Stokeslets, toggles or size change.
+      function rebuildStatic() {
+        var s = sizeRef.current, p = stateRef.current;
+        if (!s.w) return;
+        var off = staticRef.current || document.createElement('canvas');
+        staticRef.current = off;
+        off.width = Math.round(s.w * s.dpr); off.height = Math.round(s.h * s.dpr);
+        var ctx = off.getContext('2d');
+        ctx.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, s.w, s.h);
+        if (!p.stokeslets.length) return;
+
+        // Speed map on a coarse grid, then smoothed up to canvas size.
+        var gw = 160, gh = 100, speeds = new Float32Array(gw * gh);
+        for (var j = 0; j < gh; j++) for (var i = 0; i < gw; i++) {
+          var x = DOMAIN.xmin + (i + 0.5) / gw * (DOMAIN.xmax - DOMAIN.xmin);
+          var y = DOMAIN.ymax - (j + 0.5) / gh * (DOMAIN.ymax - DOMAIN.ymin);
+          var uv = velocity(x, y, p.stokeslets);
+          speeds[j * gw + i] = Math.hypot(uv[0], uv[1]);
+        }
+        var sorted = Array.from(speeds).sort(function (a, b) { return a - b; });
+        var scale = sorted[Math.floor(sorted.length * 0.98)] || 1;
+        stateRef.speedScale = scale;
+        if (p.showSpeed) {
+          var grid = document.createElement('canvas'); grid.width = gw; grid.height = gh;
+          var gctx = grid.getContext('2d'), img = gctx.createImageData(gw, gh);
+          for (var k = 0; k < speeds.length; k++) {
+            var c = rampColor(Math.sqrt(speeds[k] / scale));
+            img.data[4 * k] = c[0]; img.data[4 * k + 1] = c[1]; img.data[4 * k + 2] = c[2]; img.data[4 * k + 3] = 255;
+          }
+          gctx.putImageData(img, 0, 0);
+          ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(grid, 0, 0, s.w, s.h);
+        }
+
+        // Direction arrows on a coarse grid.
+        if (p.showArrows) {
+          var nx = 22, ny = 14, cell = s.w / nx;
+          ctx.strokeStyle = 'rgba(22,32,42,0.55)'; ctx.fillStyle = 'rgba(22,32,42,0.55)'; ctx.lineWidth = 1.2;
+          for (var b = 0; b < ny; b++) for (var a = 0; a < nx; a++) {
+            var px = (a + 0.5) * s.w / nx, py = (b + 0.5) * s.h / ny;
+            var d = toDomain(px, py), w = velocity(d[0], d[1], p.stokeslets);
+            var sp = Math.hypot(w[0], w[1]); if (sp < 1e-9) continue;
+            var len = Math.min(1, Math.sqrt(sp / scale)) * cell * 0.8;
+            var ux = w[0] / sp, uy = -w[1] / sp;
+            var x0 = px - ux * len / 2, y0 = py - uy * len / 2, x1 = px + ux * len / 2, y1 = py + uy * len / 2;
+            ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 - ux * 4 - uy * 2.5, y1 - uy * 4 + ux * 2.5);
+            ctx.lineTo(x1 - ux * 4 + uy * 2.5, y1 - uy * 4 - ux * 2.5);
+            ctx.closePath(); ctx.fill();
+          }
+        }
+      }
+
+      function drawMarkers(ctx) {
+        var p = stateRef.current;
+        p.stokeslets.forEach(function (s, idx) {
+          var c = toPx(s.x, s.y), a = s.angle * Math.PI / 180;
+          var len = 16 + 14 * s.strength;
+          var ex = c[0] + Math.cos(a) * len, ey = c[1] - Math.sin(a) * len;
+          ctx.strokeStyle = '#D9661F'; ctx.fillStyle = '#D9661F'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(c[0], c[1]); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(ex, ey);
+          ctx.lineTo(ex - Math.cos(a) * 9 + Math.sin(a) * 6, ey + Math.sin(a) * 9 + Math.cos(a) * 6);
+          ctx.lineTo(ex - Math.cos(a) * 9 - Math.sin(a) * 6, ey + Math.sin(a) * 9 - Math.cos(a) * 6);
+          ctx.closePath(); ctx.fill();
+          if (s.id === p.selectedId) {
+            ctx.strokeStyle = '#16202A'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(c[0], c[1], 12, 0, 2 * Math.PI); ctx.stroke();
+          }
+          ctx.fillStyle = '#D9661F'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(c[0], c[1], 7, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#16202A'; ctx.font = '500 12px "IBM Plex Mono", monospace';
+          ctx.fillText(String(idx + 1), c[0] + 10, c[1] + 18);
+        });
+      }
+
+      // Size the canvas to its box.
+      useEffect(function () {
+        var canvas = canvasRef.current;
+        var ro = new ResizeObserver(function () {
+          var r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+          sizeRef.current = { w: r.width, h: r.height, dpr: dpr };
+          canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+          rebuildStatic();
+        });
+        ro.observe(canvas);
+        return function () { ro.disconnect(); };
+      }, []);
+
+      useEffect(rebuildStatic, [props.stokeslets, props.showSpeed, props.showArrows]);
+
+      // Animation loop: tracers advected by the flow (midpoint RK2).
+      useEffect(function () {
+        var raf, canvas = canvasRef.current, ctx = canvas.getContext('2d');
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        particlesRef.current = Array.from({ length: 600 }, randomParticle);
+        function frame() {
+          var s = sizeRef.current, p = stateRef.current;
+          ctx.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
+          if (staticRef.current) ctx.drawImage(staticRef.current, 0, 0, s.w, s.h);
+          if (p.showTracers && p.stokeslets.length) {
+            var dt = 0.03, sts = p.stokeslets;
+            ctx.strokeStyle = 'rgba(22,32,42,0.6)'; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
+            ctx.beginPath();
+            particlesRef.current.forEach(function (q, n) {
+              var last = q.trail[q.trail.length - 1];
+              if (!p.paused) {
+                var v1 = velocity(last[0], last[1], sts);
+                var mx = last[0] + 0.5 * dt * v1[0], my = last[1] + 0.5 * dt * v1[1];
+                var v2 = velocity(mx, my, sts);
+                var nx = last[0] + dt * v2[0], ny = last[1] + dt * v2[1];
+                q.trail.push([nx, ny]); if (q.trail.length > 10) q.trail.shift();
+                q.age++;
+                if (q.age > q.life || nx < DOMAIN.xmin || nx > DOMAIN.xmax || ny < DOMAIN.ymin || ny > DOMAIN.ymax) {
+                  particlesRef.current[n] = randomParticle(); return;
+                }
+              }
+              for (var t = 0; t < q.trail.length; t++) {
+                var c = toPx(q.trail[t][0], q.trail[t][1]);
+                if (t === 0) ctx.moveTo(c[0], c[1]); else ctx.lineTo(c[0], c[1]);
+              }
+            });
+            ctx.stroke();
+          }
+          drawMarkers(ctx);
+          if (!reduceMotion) raf = requestAnimationFrame(frame);
+          else raf = setTimeout(frame, 250);
+        }
+        frame();
+        return function () { cancelAnimationFrame(raf); clearTimeout(raf); };
+      }, []);
+
+      // Pointer: press on a Stokeslet to select and drag it; press elsewhere to add one.
+      function eventPos(e) {
+        var r = canvasRef.current.getBoundingClientRect();
+        return [e.clientX - r.left, e.clientY - r.top];
+      }
+      function onPointerDown(e) {
+        var pos = eventPos(e), p = stateRef.current, hit = null;
+        p.stokeslets.forEach(function (s) {
+          var c = toPx(s.x, s.y);
+          if (Math.hypot(c[0] - pos[0], c[1] - pos[1]) < 16) hit = s;
+        });
+        var d = toDomain(pos[0], pos[1]);
+        if (hit) p.onSelect(hit.id);
+        else hit = p.onAdd(round2(d[0]), round2(d[1]));
+        dragRef.current = hit.id;
+        canvasRef.current.setPointerCapture(e.pointerId);
+      }
+      function onPointerMove(e) {
+        if (dragRef.current == null) return;
+        var pos = eventPos(e), d = toDomain(pos[0], pos[1]);
+        stateRef.current.onMove(dragRef.current,
+          round2(Math.max(DOMAIN.xmin, Math.min(DOMAIN.xmax, d[0]))),
+          round2(Math.max(DOMAIN.ymin, Math.min(DOMAIN.ymax, d[1]))));
+      }
+      function onPointerUp() { dragRef.current = null; }
+
+      return h('div', { className: 'canvas-box' },
+        h('canvas', {
+          ref: canvasRef, role: 'img',
+          'aria-label': 'Flow field generated by ' + props.stokeslets.length + ' regularized Stokeslets. Click or tap to add a Stokeslet; drag one to move it.',
+          onPointerDown: onPointerDown, onPointerMove: onPointerMove, onPointerUp: onPointerUp, onPointerCancel: onPointerUp
+        }),
+        props.stokeslets.length ? null : h('div', { className: 'empty' }, 'Click anywhere to add a Stokeslet'));
+    }
+
+    // ---------- Controls ----------
+    function Slider(props) {
+      return h('div', { className: 'field' },
+        h('label', { htmlFor: props.id },
+          h('span', null, props.label),
+          h('span', { className: 'mono' }, props.display)),
+        h('input', {
+          id: props.id, type: 'range', min: props.min, max: props.max, step: props.step,
+          value: props.value, disabled: props.disabled,
+          onChange: function (e) { props.onChange(parseFloat(e.target.value)); }
+        }));
+    }
+
+    function App() {
+      var initial = useRef(null);
+      if (!initial.current) initial.current = [makeStokeslet(-0.6, 0, 1.5, 0), makeStokeslet(0.6, 0.3, 1.5, 200)];
+      var st = useState(initial.current), stokeslets = st[0], setStokeslets = st[1];
+      var sel = useState(initial.current[0].id), selectedId = sel[0], setSelectedId = sel[1];
+      var t1 = useState(true), showSpeed = t1[0], setShowSpeed = t1[1];
+      var t2 = useState(true), showTracers = t2[0], setShowTracers = t2[1];
+      var t3 = useState(false), showArrows = t3[0], setShowArrows = t3[1];
+      var t4 = useState(false), paused = t4[0], setPaused = t4[1];
+
+      var current = stokeslets.find(function (s) { return s.id === selectedId; }) || null;
+      var disabled = !current;
+
+      function update(id, patch) {
+        setStokeslets(function (list) {
+          return list.map(function (s) { return s.id === id ? Object.assign({}, s, patch) : s; });
+        });
+      }
+      function add(x, y) {
+        var base = current || { strength: 1.5, angle: 0 };
+        var s = makeStokeslet(x, y, base.strength, base.angle);
+        setStokeslets(function (list) { return list.concat([s]); });
+        setSelectedId(s.id);
+        return s;
+      }
+      function remove() {
+        if (!current) return;
+        var rest = stokeslets.filter(function (s) { return s.id !== current.id; });
+        setStokeslets(rest);
+        setSelectedId(rest.length ? rest[rest.length - 1].id : null);
+      }
+      function clearAll() { setStokeslets([]); setSelectedId(null); }
+
+      return h('div', { className: 'app' },
+        h('div', { className: 'stage' },
+          h(FlowCanvas, {
+            stokeslets: stokeslets, selectedId: selectedId,
+            showSpeed: showSpeed, showTracers: showTracers, showArrows: showArrows, paused: paused,
+            onAdd: add, onSelect: setSelectedId,
+            onMove: function (id, x, y) { update(id, { x: x, y: y }); }
+          }),
+          h('div', { className: 'legend' },
+            h('div', { className: 'ramp' }, h('span', null, 'Flow speed'), h('span', { className: 'bar', 'aria-hidden': 'true' }), h('span', { className: 'mono' }, 'slow → fast')),
+            h('span', { className: 'mono', style: { color: 'var(--muted)' } }, 'ε = ' + EPS + ', μ = 1'))),
+
+        h('div', { className: 'controls' },
+          h('p', { className: 'hint' }, 'Click the field to add a point force (a Stokeslet). Drag one to move it, or pick it below to adjust it.'),
+          h('div', { className: 'field' },
+            h('label', { htmlFor: 'which' }, h('span', null, 'Stokeslet')),
+            h('select', {
+              id: 'which', value: current ? String(current.id) : '', disabled: !stokeslets.length,
+              onChange: function (e) { setSelectedId(parseInt(e.target.value, 10)); }
+            },
+              stokeslets.length
+                ? stokeslets.map(function (s, i) { return h('option', { key: s.id, value: String(s.id) }, 'Stokeslet ' + (i + 1)); })
+                : h('option', { value: '' }, 'None yet'))),
+          h(Slider, { id: 'strength', label: 'Strength |f|', min: 0, max: 3, step: 0.05, disabled: disabled,
+            value: current ? current.strength : 0, display: current ? current.strength.toFixed(2) : '–',
+            onChange: function (v) { update(current.id, { strength: v }); } }),
+          h(Slider, { id: 'angle', label: 'Direction', min: 0, max: 359, step: 1, disabled: disabled,
+            value: current ? current.angle : 0, display: current ? current.angle + '°' : '–',
+            onChange: function (v) { update(current.id, { angle: v }); } }),
+          h(Slider, { id: 'px', label: 'Position x', min: DOMAIN.xmin, max: DOMAIN.xmax, step: 0.01, disabled: disabled,
+            value: current ? current.x : 0, display: current ? current.x.toFixed(2) : '–',
+            onChange: function (v) { update(current.id, { x: v }); } }),
+          h(Slider, { id: 'py', label: 'Position y', min: DOMAIN.ymin, max: DOMAIN.ymax, step: 0.01, disabled: disabled,
+            value: current ? current.y : 0, display: current ? current.y.toFixed(2) : '–',
+            onChange: function (v) { update(current.id, { y: v }); } }),
+          h('div', { className: 'row' },
+            h('button', { type: 'button', onClick: function () { add(0, 0); } }, 'Add at center'),
+            h('button', { type: 'button', onClick: remove, disabled: disabled }, 'Remove'),
+            h('button', { type: 'button', onClick: clearAll, disabled: !stokeslets.length }, 'Clear all')),
+          h('div', { className: 'toggles' },
+            h('label', null, h('input', { type: 'checkbox', checked: showSpeed, onChange: function (e) { setShowSpeed(e.target.checked); } }), 'Speed map'),
+            h('label', null, h('input', { type: 'checkbox', checked: showTracers, onChange: function (e) { setShowTracers(e.target.checked); } }), 'Tracers'),
+            h('label', null, h('input', { type: 'checkbox', checked: showArrows, onChange: function (e) { setShowArrows(e.target.checked); } }), 'Arrows'),
+            h('label', null, h('input', { type: 'checkbox', checked: paused, onChange: function (e) { setPaused(e.target.checked); } }), 'Pause')),
+          h('div', { className: 'eq' }, 'Steady 2D Stokes flow from regularized Stokeslets (Cortez, 2001). The log term is referenced to a length L = ' + LREF + ', since a 2D point force has no decaying far field.')));
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+
+    // When embedded in an iframe, tell the parent page how tall we are.
+    if (window.parent !== window) {
+      var report = function () {
+        window.parent.postMessage({ type: 'sim-height', height: document.documentElement.scrollHeight }, '*');
+      };
+      new ResizeObserver(report).observe(document.body);
+      window.addEventListener('load', report);
+    }
+  </script>
+</body>
+</html>
