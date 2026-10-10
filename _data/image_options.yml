@@ -1,46 +1,203 @@
-# Temporary: candidate photos for the research pages, from iNaturalist via GBIF.
-# Delete this file and image-options/ once images are chosen.
 - group: Exaiptasia diaphana
   prefix: E
-  license: CC BY 4.0
-  license_url: https://creativecommons.org/licenses/by/4.0/
+  license: see each photo
+  license_url: ''
   photos:
-    - {id: 607078904, ext: jpg, by: Lisa Biasillo}
-    - {id: 607078995, ext: jpg, by: Lisa Biasillo}
-    - {id: 606300270, ext: jpg, by: TonyT}
-    - {id: 622597903, ext: jpg, by: Cricket Raspet}
-    - {id: 622591637, ext: jpg, by: Cricket Raspet}
-    - {id: 701043317, ext: jpg, by: Cricket Raspet}
-    - {id: 701041877, ext: jpg, by: Cricket Raspet}
-    - {id: 628713780, ext: jpg, by: Cypress Hansen}
-    - {id: 626052436, ext: jpg, by: Rachel Lee Harper}
-    - {id: 661350145, ext: jpg, by: Borja Fierro}
-    - {id: 657615580, ext: jpg, by: Mark Valen}
+  - id: 608033354
+    ext: jpg
+    by: Marissa Dallaire
+    where: Galápagos
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 606066264
+    ext: jpg
+    by: serenamanuel
+    where: San Diego, CA
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 609615952
+    ext: jpg
+    by: Alexandra Noyes
+    where: Newport Beach, CA
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 610853185
+    ext: jpg
+    by: spirula
+    where: Grand Cayman
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 609061293
+    ext: jpg
+    by: mccaulmj
+    where: Chula Vista, CA
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 608690148
+    ext: jpg
+    by: mnajerae
+    where: Tenerife
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 614238935
+    ext: jpg
+    by: Stephanie Lyon
+    where: Hawaiʻi
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 638883292
+    ext: jpg
+    by: Miles Ghannadian
+    where: San Diego, CA
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 609808493
+    ext: jpg
+    by: centibead
+    where: Baja California Sur
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 612524331
+    ext: jpg
+    by: h0neybee
+    where: Honolulu, HI
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 612653717
+    ext: jpg
+    by: maddy_wilkens
+    where: Honolulu, HI
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 613976106
+    ext: jpg
+    by: zihuadean
+    where: ''
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
 - group: Cassiopea
   prefix: C
-  license: CC BY 4.0
-  license_url: https://creativecommons.org/licenses/by/4.0/
+  license: see each photo
+  license_url: ''
   photos:
-    - {id: 612554182, ext: jpg, by: PampaSorro}
-    - {id: 720976589, ext: jpg, by: Brynn Fricke}
-    - {id: 480637068, ext: jpg, by: Thomas Irvine}
-    - {id: 593950113, ext: jpg, by: Theo Busschau}
-    - {id: 597965090, ext: jpg, by: justanotherbirdbrain}
-    - {id: 348456955, ext: jpeg, by: Alex Doyle}
-    - {id: 353572844, ext: jpeg, by: Ian Adams}
-    - {id: 369134295, ext: jpeg, by: Josiah Londerée}
+  - id: 606884373
+    ext: jpg
+    by: hiddenutah
+    where: Berry Islands, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 670697643
+    ext: jpg
+    by: lukestearns
+    where: Harbour Island, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 511203334
+    ext: jpg
+    by: Di Boonman
+    where: Eleuthera, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 545560508
+    ext: jpg
+    by: Di Boonman
+    where: Eleuthera, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 469764729
+    ext: jpg
+    by: Jean-Paul Boerekamps
+    where: Bimini, Bahamas
+    lic: CC0 (public domain)
+    lic_url: https://creativecommons.org/publicdomain/zero/1.0/
+  - id: 471096044
+    ext: jpg
+    by: chalpu77
+    where: Grand Bahama
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 492601555
+    ext: jpg
+    by: mooneymere
+    where: Green Turtle Cay, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 558145997
+    ext: jpg
+    by: Mylo
+    where: Berry Islands, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 687250234
+    ext: jpg
+    by: ovlovlove
+    where: San Salvador, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 601082820
+    ext: jpg
+    by: Dale Browne
+    where: Berry Islands, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 350947661
+    ext: jpg
+    by: ashelley954
+    where: Ocean Cay, Bahamas
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
 - group: Euprymna scolopes
   prefix: S
   license: CC BY-NC 4.0
   license_url: https://creativecommons.org/licenses/by-nc/4.0/
   photos:
-    - {id: 462866671, ext: jpg, by: jlewis0056}
-    - {id: 478512817, ext: jpg, by: abc911}
-    - {id: 528001535, ext: jpg, by: Olie Turner III}
-    - {id: 527997426, ext: jpg, by: Olie Turner III}
-    - {id: 560275789, ext: jpg, by: Olie Turner III}
-    - {id: 349737759, ext: jpeg, by: João Pontes}
-    - {id: 351990735, ext: jpg, by: DirtyPopcorn}
-    - {id: 263841616, ext: jpg, by: lewmlewm}
-    - {id: 463607755, ext: jpeg, by: Anik Grearson}
-    - {id: 183596068, ext: jpeg, by: Sara Thiebaud}
+  - id: 462866671
+    ext: jpg
+    by: jlewis0056
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 478512817
+    ext: jpg
+    by: abc911
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 528001535
+    ext: jpg
+    by: Olie Turner III
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 527997426
+    ext: jpg
+    by: Olie Turner III
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 560275789
+    ext: jpg
+    by: Olie Turner III
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 349737759
+    ext: jpeg
+    by: João Pontes
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 351990735
+    ext: jpg
+    by: DirtyPopcorn
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 263841616
+    ext: jpg
+    by: lewmlewm
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 463607755
+    ext: jpeg
+    by: Anik Grearson
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/
+  - id: 183596068
+    ext: jpeg
+    by: Sara Thiebaud
+    lic: CC BY-NC 4.0
+    lic_url: https://creativecommons.org/licenses/by-nc/4.0/

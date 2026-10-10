@@ -15,20 +15,20 @@ summary: Temporary page for choosing research photos.
 <header class="page-head">
   <div class="kicker mono">Temporary page</div>
   <h1>Pick your research photos</h1>
-  <p class="lede-lg">Openly licensed photos from iNaturalist. Tell Claude the codes you like (e.g. "E3, C5, S2"). Click a photo to see it full size. This page will be removed once you've chosen.</p>
+  <p class="lede-lg">Openly licensed photos from iNaturalist. Tell Claude the codes you like (e.g. "E3, C5, S2"). The E and C sets have been replaced since the first round. Click a photo to see it full size. This page will be removed once you've chosen.</p>
 </header>
 
 {% for g in site.data.image_options %}
 <section>
   <h2><em>{{ g.group }}</em></h2>
-  <p class="lede">All licensed <a href="{{ g.license_url }}">{{ g.license }}</a>, credited to the photographer.</p>
+  {% if g.prefix == 'S' %}<p class="lede">Same set as before.</p>{% else %}<p class="lede">New set: field photos from clear tropical and subtropical water.</p>{% endif %}
   <div class="opt-grid">
     {% for p in g.photos %}
     <div class="opt">
       <a class="ph" href="https://inaturalist-open-data.s3.amazonaws.com/photos/{{ p.id }}/large.{{ p.ext }}">
         <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/{{ p.id }}/medium.{{ p.ext }}" alt="{{ g.group }} option {{ g.prefix }}{{ forloop.index }}" loading="lazy">
       </a>
-      <div class="cap"><span class="code">{{ g.prefix }}{{ forloop.index }}</span>© {{ p.by }} · <a href="https://www.inaturalist.org/photos/{{ p.id }}">source</a></div>
+      <div class="cap"><span class="code">{{ g.prefix }}{{ forloop.index }}</span>© {{ p.by }}{% if p.where != "" and p.where %}, {{ p.where }}{% endif %}<br><a href="{{ p.lic_url }}">{{ p.lic }}</a> · <a href="https://www.inaturalist.org/photos/{{ p.id }}">source</a></div>
     </div>
     {% endfor %}
   </div>
