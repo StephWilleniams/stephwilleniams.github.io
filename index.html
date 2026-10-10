@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Steph Willeniams</title>
-  <meta name="description" content="[One-line description of your research for search engines and link previews.]">
+  <title>Stephen Williams · Applied Mathematics, UC Merced</title>
+  <meta name="description" content="Stephen Williams, postdoctoral researcher in applied mathematics at UC Merced. Mathematical models of how host–microbe symbioses form and fail under climate stress.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink: #16202A;
@@ -49,7 +49,8 @@
     section { border-top: 1px solid var(--line); padding: 48px 0; }
     section:first-of-type { border-top: 0; }
     h2 { margin: 0 0 24px; font-size: 24px; font-weight: 600; line-height: 1.3; }
-    .lede { margin: -16px 0 24px; color: var(--ink-2); max-width: 640px; }
+    h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; line-height: 1.4; }
+    .lede { margin: -16px 0 24px; color: var(--ink-2); max-width: 680px; }
 
     /* Hero */
     .hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 64px 0 56px; }
@@ -61,8 +62,15 @@
     .hero-text { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
     .kicker { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
     h1 { margin: 0; font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; }
-    .bio { margin: 0; font-size: 18px; color: var(--ink-2); max-width: 640px; }
+    .bio { margin: 0; font-size: 18px; color: var(--ink-2); max-width: 680px; }
     .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; padding-top: 4px; }
+
+    /* Research */
+    .themes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .theme { border: 1px solid var(--line); border-radius: 12px; padding: 22px; background: var(--bg); }
+    .theme p { margin: 0; color: var(--ink-2); font-size: 15px; }
+    .theme .refs { margin-top: 14px; font-size: 14px; }
+    .tag { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 
     /* News */
     .news { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
@@ -74,7 +82,7 @@
     .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
     .section-head h2 { margin: 0; }
     .pubs { display: flex; flex-direction: column; gap: 28px; }
-    .pub h3 { margin: 0 0 6px; font-size: 18px; font-weight: 600; line-height: 1.4; }
+    .pub h3 { margin-bottom: 6px; }
     .pub .meta { font-size: 15px; color: var(--ink-2); line-height: 1.5; }
     .pub .me { font-weight: 600; color: var(--ink); }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
@@ -83,6 +91,9 @@
       padding: 6px 12px; border: 1px solid var(--line-2); border-radius: 6px; color: var(--ink);
     }
     .chips a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .subhead { margin: 36px 0 14px; font-size: 15px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .plain { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 15px; display: flex; flex-direction: column; gap: 8px; }
+    .note { font-size: 14px; color: var(--muted); margin-top: 16px; }
 
     /* Embedded simulation */
     .sim-frame {
@@ -91,13 +102,20 @@
     }
     .sim-caption { margin-top: 10px; font-size: 14px; color: var(--muted); }
 
-    /* Files table */
+    /* Tables */
     .table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
     table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
     th { background: var(--panel); text-align: left; font-weight: 600; padding: 12px 16px; }
-    td { padding: 14px 16px; border-top: 1px solid var(--line); }
-    td.venue { color: var(--ink-2); }
-    td.path { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; }
+    td { padding: 14px 16px; border-top: 1px solid var(--line); vertical-align: top; }
+    td.muted { color: var(--ink-2); }
+    td.date { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+    /* Positions */
+    .cv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+    .cv-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+    .cv-list .when { font-size: 13px; color: var(--muted); }
+    .cv-list .what { font-weight: 600; }
+    .cv-list .where { color: var(--ink-2); font-size: 15px; }
 
     footer { border-top: 1px solid var(--line); margin-top: 16px; }
     footer .wrap {
@@ -115,13 +133,13 @@
 
 <header>
   <div class="wrap">
-    <a class="site-name" href="#top">Steph Willeniams</a>
+    <a class="site-name" href="#top">Stephen Williams</a>
     <nav aria-label="Main">
+      <a href="#research">Research</a>
       <a href="#publications">Publications</a>
-      <a href="#interactive">Interactive</a>
-      <a href="#files">Talks &amp; Files</a>
+      <a href="#talks">Talks</a>
       <a href="#news">News</a>
-      <a href="files/cv.pdf">CV</a>
+      <a href="#cv">CV</a>
     </nav>
   </div>
 </header>
@@ -129,83 +147,143 @@
 <main id="top" class="wrap">
 
   <section class="hero" id="about">
-    <!-- Replace with: <img class="headshot" src="images/headshot.jpg" alt="Steph Willeniams"> -->
+    <!-- Replace with: <img class="headshot" src="images/headshot.jpg" alt="Stephen Williams"> -->
     <div class="headshot" role="img" aria-label="Headshot placeholder">[Headshot]</div>
     <div class="hero-text">
-      <div class="kicker mono">[Position] · [Department], [University]</div>
-      <h1>Steph Willeniams</h1>
-      <p class="bio">[Two or three sentences on your research: the questions you work on, the methods you use, and why it matters.]</p>
+      <div class="kicker mono">Postdoctoral Research Scholar · Applied Mathematics, UC Merced</div>
+      <h1>Stephen Williams</h1>
+      <p class="bio">I build mathematical models to predict how partnerships between hosts and microbes form, and how they break down under stress, especially climate-driven warming. My work combines low-Reynolds-number fluid dynamics, mathematical modeling and data-driven inference, developed in close collaboration with experimental labs. My main systems are the bobtail squid and its bioluminescent symbiont <em>Vibrio fischeri</em>, and the sea anemone <em>Exaiptasia diaphana</em>, a laboratory model for coral bleaching.</p>
+      <p class="bio" style="font-size:16px">I am part of NSF INSITE, the Institute for Symbiotic Interactions, Training, and Education in the Face of a Changing Climate, working with Profs. Erica Rutter and Shilpa Khatri. I did my PhD in physics at the University of Warwick with Prof. Marco Polin.</p>
       <div class="links">
-        <a href="files/cv.pdf">CV (PDF)</a>
-        <a href="#">Google Scholar</a>
-        <a href="#">ORCID</a>
+        <a href="files/Williams_CV.pdf">CV (PDF)</a>
+        <a href="https://scholar.google.com/citations?user=ckO0FRgAAAAJ">Google Scholar</a>
+        <a href="https://orcid.org/0000-0001-8848-6372">ORCID</a>
         <a href="https://github.com/StephWilleniams">GitHub</a>
-        <a href="mailto:[email]">[email]</a>
+        <a href="mailto:swilliams64@ucmerced.edu">swilliams64@ucmerced.edu</a>
       </div>
+    </div>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+    <p class="lede">Symbioses can fail at any scale: in the flows a host uses to recruit its microbes, in how microbes adapt to stress, or in host populations. I build mechanistic models at each scale, then use sensitivity and identifiability analysis to show experimental collaborators which measurements matter most.</p>
+    <div class="themes">
+      <article class="theme">
+        <div class="tag mono">Fluid dynamics</div>
+        <h3>Symbiont recruitment in the bobtail squid</h3>
+        <p>Newly hatched bobtail squid draw in their bacterial partners using breathing-driven flows. With the Heath-Heckman lab (Michigan State), I built a regularized-Stokeslet model of these flows inside the squid. It shows that the shallow, rapid breathing of heat-stressed squid can halve the time bacteria spend near the light organ.</p>
+        <div class="refs"><a href="https://doi.org/10.1098/rsif.2025.1136">J. R. Soc. Interface (2026)</a> · <a href="https://github.com/StephWilleniams/SquidInternalFlows">Code</a></div>
+      </article>
+      <article class="theme">
+        <div class="tag mono">Inference</div>
+        <h3>Models of microbes and hosts under stress</h3>
+        <p>With the Nishiguchi lab, I analyzed the identifiability of a <em>V. fischeri</em> biofilm model, using a genetic algorithm to design sampling schedules: 11 optimized time points beat 51 evenly spaced ones. With the Sogin lab, I study heat stress in <em>Exaiptasia</em>, where shifts in rare bacterial taxa precede the host's own decline.</p>
+        <div class="refs"><a href="https://doi.org/10.1007/s11538-026-01693-5">Bull. Math. Biol. (2026)</a> · <a href="https://doi.org/10.1101/2025.09.18.677205">Nat. Commun. (in press)</a></div>
+      </article>
+      <article class="theme">
+        <div class="tag mono">Active matter</div>
+        <h3>Active–passive mixtures in confinement</h3>
+        <p>In my PhD, I combined swimming microalgae and passive colloids in microfluidic channels, showing that confinement alone drives colloids to pile up at the walls, which we used to de-mix the two experimentally. I am now generalizing this to other microswimmers and to the living boundaries of hosts.</p>
+        <div class="refs"><a href="https://doi.org/10.1038/s41467-022-32520-9">Nat. Commun. (2022)</a> · <a href="https://github.com/StephWilleniams/ActivePassiveConfinement">Code</a></div>
+      </article>
     </div>
   </section>
 
   <section id="news">
     <h2>News</h2>
     <ul class="news">
-      <li><span class="date mono">[Mon YYYY]</span><span class="item">[New paper accepted at …] <a href="#publications">Read it →</a></span></li>
-      <li><span class="date mono">[Mon YYYY]</span><span class="item">[Presenting a poster at …] <a href="#files">Poster &amp; materials →</a></span></li>
-      <li><span class="date mono">[Mon YYYY]</span><span class="item">[Award, grant, or new position]</span></li>
+      <li><span class="date mono">2026</span><span class="item">Our study of the <em>Exaiptasia</em> microbiome under temperature stress, led by K. M. Muffett, is in press at <em>Nature Communications</em>. <a href="https://doi.org/10.1101/2025.09.18.677205">Preprint →</a></span></li>
+      <li><span class="date mono">Jun 2026</span><span class="item">Contributed talk and travel award at CassiopeaBase MATH-BIO 2026, Key Largo, FL.</span></li>
+      <li><span class="date mono">2026</span><span class="item">Two papers out: squid breathing flows under thermal stress in <a href="https://doi.org/10.1098/rsif.2025.1136"><em>J. R. Soc. Interface</em></a>, and biofilm model identifiability in <a href="https://doi.org/10.1007/s11538-026-01693-5"><em>Bull. Math. Biol.</em></a></span></li>
+      <li><span class="date mono">Mar 2026</span><span class="item">Invited talk at the Spring AMS Western Sectional Meeting, Boise, ID.</span></li>
+      <li><span class="date mono">Oct 2025</span><span class="item">Seminar at the Interdisciplinary Center for Quantitative Modeling in Biology, UC Riverside.</span></li>
     </ul>
   </section>
 
   <section id="publications">
     <div class="section-head">
-      <h2>Selected publications</h2>
-      <a href="#">Full list →</a>
+      <h2>Publications</h2>
+      <a href="https://scholar.google.com/citations?user=ckO0FRgAAAAJ">Google Scholar →</a>
     </div>
     <div class="pubs">
       <article class="pub">
-        <h3>[Paper title]</h3>
-        <div class="meta"><span class="me">[You]</span>, [Coauthor], [Coauthor] · <em>[Journal]</em> · [Year]</div>
-        <div class="chips"><a href="#">PDF</a><a href="#">Code</a><a href="#interactive">Interactive</a></div>
+        <h3>Low-abundance taxa drive host microbiome response to temperature stress</h3>
+        <div class="meta">Muffett, K. M., <span class="me">Williams, S.</span>, MacVittie, S., Schwiesow, M. J. W., Mendoza, Su. A., Mendoza, Sa. A., Hatch-West, H., Sogin, E. M. · <em>Nature Communications</em>, in press · 2026</div>
+        <div class="chips"><a href="https://doi.org/10.1101/2025.09.18.677205">Preprint</a></div>
       </article>
       <article class="pub">
-        <h3>[Paper title]</h3>
-        <div class="meta">[Coauthor], <span class="me">[You]</span> · <em>[Conference]</em> · [Year]</div>
-        <div class="chips"><a href="#">PDF</a><a href="#">Poster</a></div>
+        <h3>Identifiability, sensitivity, and genetic algorithms in bacterial biofilm selection models</h3>
+        <div class="meta"><span class="me">Williams, S.</span>, Cheam, D.*, Nishiguchi, M. K., Sindi, S. S., Khatri, S., Rutter, E. M. · <em>Bulletin of Mathematical Biology</em> 88(7), 132 · 2026</div>
+        <div class="chips"><a href="https://doi.org/10.1007/s11538-026-01693-5">Paper</a><a href="https://github.com/StephWilleniams/BiofilmModelAnalysis">Code</a></div>
       </article>
       <article class="pub">
-        <h3>[Paper title]</h3>
-        <div class="meta"><span class="me">[You]</span>, [Coauthor] · <em>[Preprint server]</em> · [Year]</div>
-        <div class="chips"><a href="#">PDF</a><a href="#">Slides</a></div>
+        <h3>Thermal stress disrupts symbiotic fluid dynamics in bobtail squid</h3>
+        <div class="meta"><span class="me">Williams, S.</span>, Ruiz, K. A.*, Heath-Heckman, E., Rutter, E. M., Khatri, S. · <em>Journal of the Royal Society Interface</em> 23(240), 20251136 · 2026</div>
+        <div class="chips"><a href="https://doi.org/10.1098/rsif.2025.1136">Paper</a><a href="https://github.com/StephWilleniams/SquidInternalFlows">Code</a></div>
+      </article>
+      <article class="pub">
+        <h3>Confinement-induced accumulation and de-mixing of microscopic active–passive mixtures</h3>
+        <div class="meta"><span class="me">Williams, S.</span>, Jeanneret, R., Tuval, I., Polin, M. · <em>Nature Communications</em> 13, 4776 · 2022</div>
+        <div class="chips"><a href="https://doi.org/10.1038/s41467-022-32520-9">Paper</a><a href="https://github.com/StephWilleniams/ActivePassiveConfinement">Code</a></div>
       </article>
     </div>
+    <p class="note">* Student I mentored.</p>
+
+    <div class="subhead">In preparation</div>
+    <ul class="plain">
+      <li><span class="me">Williams, S.</span>, Khatri, S., Polin, M. Controlling passive particle distributions in mixed systems through active scattering events.</li>
+      <li><span class="me">Williams, S.</span>, Muffett, K. M. Deep learning measures the timing of strobilation in <em>Cassiopea</em> from daily photographs.</li>
+    </ul>
   </section>
 
   <section id="interactive">
-    <h2>Interactive model</h2>
-    <p class="lede">Example embedded simulation: a simple SIR epidemic model. It lives in its own folder, so it also has its own link you can share or put on a poster.</p>
-    <iframe class="sim-frame" id="sim-sir" src="sims/sir-model/" title="Interactive SIR epidemic model" loading="lazy"></iframe>
+    <h2>Interactive</h2>
+    <p class="lede">Demo slot for interactive simulations. This example is a simple SIR model; each simulation lives in its own folder, so it also gets a link you can share or print as a QR code.</p>
+    <iframe class="sim-frame" id="sim-sir" src="sims/sir-model/" title="Interactive SIR model" loading="lazy"></iframe>
     <div class="sim-caption">Open full screen: <a href="sims/sir-model/">sims/sir-model/</a></div>
   </section>
 
-  <section id="files">
-    <h2>Talks &amp; files</h2>
-    <p class="lede">Each file gets a permanent link on this site, safe to print as a QR code on a poster.</p>
+  <section id="talks">
+    <h2>Talks &amp; posters</h2>
     <div class="table-box">
       <table>
-        <thead><tr><th>Title</th><th>Venue</th><th>Link</th></tr></thead>
+        <thead><tr><th>Date</th><th>Event</th><th>Type</th></tr></thead>
         <tbody>
-          <tr><td>[Poster title]</td><td class="venue">[Conference], [Year]</td><td class="path"><a href="#">/files/[year]-poster.pdf</a></td></tr>
-          <tr><td>[Talk title]</td><td class="venue">[Seminar series], [Year]</td><td class="path"><a href="#">/files/[year]-slides.pdf</a></td></tr>
-          <tr><td>[Supplementary data]</td><td class="venue">[Paper short name]</td><td class="path"><a href="#">/files/[name]-data.zip</a></td></tr>
+          <tr><td class="date">Jun 2026</td><td>CassiopeaBase MATH-BIO 2026, Key Largo, FL</td><td class="muted">Talk</td></tr>
+          <tr><td class="date">Mar 2026</td><td>Spring AMS Western Sectional Meeting, Boise, ID</td><td class="muted">Invited talk</td></tr>
+          <tr><td class="date">Oct 2025</td><td>Interdisciplinary Center for Quantitative Modeling in Biology, UC Riverside</td><td class="muted">Invited seminar</td></tr>
+          <tr><td class="date">Jul 2025</td><td>NITMB Workshop: Mathematical Modeling, Computational Methods, and Biological Fluid Dynamics, Chicago, IL</td><td class="muted">Talk &amp; poster</td></tr>
+          <tr><td class="date">Jan 2025</td><td>Mathematics of Data, Dynamics, and Life Sciences, UC Irvine</td><td class="muted">Poster</td></tr>
+          <tr><td class="date">Nov 2024</td><td>77th Annual Meeting of the APS Division of Fluid Dynamics, Salt Lake City, UT</td><td class="muted">Talk</td></tr>
+          <tr><td class="date">Jun 2024</td><td>SIAM Conference on the Life Sciences (LS24), Portland, OR</td><td class="muted">Talk</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="note">Earlier talks and posters are listed in my <a href="files/Williams_CV.pdf">CV</a>. Slides and posters will be linked here.</p>
+  </section>
+
+  <section id="cv">
+    <h2>Positions &amp; education</h2>
+    <div class="cv-grid">
+      <ul class="cv-list">
+        <li><div class="when mono">2023 – present</div><div class="what">Postdoctoral Research Scholar</div><div class="where">Applied Mathematics, UC Merced · NSF INSITE</div></li>
+        <li><div class="when mono">2022 – 2023</div><div class="what">Postdoctoral Research Fellow</div><div class="where">Soft Matter Physics, University of Warwick</div></li>
+        <li><div class="when mono">2022</div><div class="what">Research Technician</div><div class="where">Soft Matter Physics, University of Warwick</div></li>
+      </ul>
+      <ul class="cv-list">
+        <li><div class="when mono">2018 – 2022</div><div class="what">PhD, Physics</div><div class="where">University of Warwick · Mixed Active–Passive Systems in Confinement</div></li>
+        <li><div class="when mono">2014 – 2018</div><div class="what">MMathPhys, Mathematics and Physics</div><div class="where">University of Warwick</div></li>
+      </ul>
+    </div>
+    <p class="note"><a href="files/Williams_CV.pdf">Full CV (PDF) →</a></p>
   </section>
 
 </main>
 
 <footer>
   <div class="wrap">
-    <span>© 2026 Steph Willeniams</span>
-    <span>Hosted on GitHub Pages</span>
+    <span>© 2026 Stephen Williams</span>
+    <span>Department of Applied Mathematics, University of California, Merced</span>
   </div>
 </footer>
 
