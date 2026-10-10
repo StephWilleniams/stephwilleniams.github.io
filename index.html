@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Steph Willeniams</title>
+  <meta name="description" content="[One-line description of your research for search engines and link previews.]">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #16202A;
+      --ink-2: #3D4955;
+      --muted: #5B6672;
+      --line: #E3E7EC;
+      --line-2: #C9D1DA;
+      --bg: #FFFFFF;
+      --panel: #F8FAFB;
+      --placeholder: #EEF1F4;
+      --accent: #0B4F8A;
+      --accent-hover: #06335C;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    /* Header */
+    header { border-bottom: 1px solid var(--line); }
+    header .wrap {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 12px 32px; padding-top: 18px; padding-bottom: 18px;
+    }
+    .site-name { font-weight: 600; font-size: 18px; color: var(--ink); }
+    nav { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 15px; }
+    nav a { color: var(--ink-2); padding: 10px 0; }
+
+    section { border-top: 1px solid var(--line); padding: 48px 0; }
+    section:first-of-type { border-top: 0; }
+    h2 { margin: 0 0 24px; font-size: 24px; font-weight: 600; line-height: 1.3; }
+    .lede { margin: -16px 0 24px; color: var(--ink-2); max-width: 640px; }
+
+    /* Hero */
+    .hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; padding: 64px 0 56px; }
+    .headshot {
+      flex: 0 0 200px; height: 240px; border-radius: 10px; object-fit: cover;
+      background: var(--placeholder); display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 14px;
+    }
+    .hero-text { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+    .kicker { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+    h1 { margin: 0; font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; }
+    .bio { margin: 0; font-size: 18px; color: var(--ink-2); max-width: 640px; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; padding-top: 4px; }
+
+    /* News */
+    .news { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .news li { display: flex; flex-wrap: wrap; gap: 4px 24px; line-height: 1.5; }
+    .news .date { flex: 0 0 96px; font-size: 14px; color: var(--muted); padding-top: 2px; }
+    .news .item { flex: 1 1 400px; min-width: 0; }
+
+    /* Publications */
+    .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
+    .section-head h2 { margin: 0; }
+    .pubs { display: flex; flex-direction: column; gap: 28px; }
+    .pub h3 { margin: 0 0 6px; font-size: 18px; font-weight: 600; line-height: 1.4; }
+    .pub .meta { font-size: 15px; color: var(--ink-2); line-height: 1.5; }
+    .pub .me { font-weight: 600; color: var(--ink); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
+    .chips a {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;
+      padding: 6px 12px; border: 1px solid var(--line-2); border-radius: 6px; color: var(--ink);
+    }
+    .chips a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+    /* Embedded simulation */
+    .sim-frame {
+      display: block; width: 100%; height: 420px; border: 1px solid var(--line);
+      border-radius: 12px; background: var(--panel);
+    }
+    .sim-caption { margin-top: 10px; font-size: 14px; color: var(--muted); }
+
+    /* Files table */
+    .table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+    table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
+    th { background: var(--panel); text-align: left; font-weight: 600; padding: 12px 16px; }
+    td { padding: 14px 16px; border-top: 1px solid var(--line); }
+    td.venue { color: var(--ink-2); }
+    td.path { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; }
+
+    footer { border-top: 1px solid var(--line); margin-top: 16px; }
+    footer .wrap {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+      padding-top: 28px; padding-bottom: 40px; font-size: 14px; color: var(--muted);
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 34px; }
+      .headshot { flex-basis: 100%; height: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="site-name" href="#top">Steph Willeniams</a>
+    <nav aria-label="Main">
+      <a href="#publications">Publications</a>
+      <a href="#interactive">Interactive</a>
+      <a href="#files">Talks &amp; Files</a>
+      <a href="#news">News</a>
+      <a href="files/cv.pdf">CV</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <section class="hero" id="about">
+    <!-- Replace with: <img class="headshot" src="images/headshot.jpg" alt="Steph Willeniams"> -->
+    <div class="headshot" role="img" aria-label="Headshot placeholder">[Headshot]</div>
+    <div class="hero-text">
+      <div class="kicker mono">[Position] · [Department], [University]</div>
+      <h1>Steph Willeniams</h1>
+      <p class="bio">[Two or three sentences on your research: the questions you work on, the methods you use, and why it matters.]</p>
+      <div class="links">
+        <a href="files/cv.pdf">CV (PDF)</a>
+        <a href="#">Google Scholar</a>
+        <a href="#">ORCID</a>
+        <a href="https://github.com/StephWilleniams">GitHub</a>
+        <a href="mailto:[email]">[email]</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="news">
+    <h2>News</h2>
+    <ul class="news">
+      <li><span class="date mono">[Mon YYYY]</span><span class="item">[New paper accepted at …] <a href="#publications">Read it →</a></span></li>
+      <li><span class="date mono">[Mon YYYY]</span><span class="item">[Presenting a poster at …] <a href="#files">Poster &amp; materials →</a></span></li>
+      <li><span class="date mono">[Mon YYYY]</span><span class="item">[Award, grant, or new position]</span></li>
+    </ul>
+  </section>
+
+  <section id="publications">
+    <div class="section-head">
+      <h2>Selected publications</h2>
+      <a href="#">Full list →</a>
+    </div>
+    <div class="pubs">
+      <article class="pub">
+        <h3>[Paper title]</h3>
+        <div class="meta"><span class="me">[You]</span>, [Coauthor], [Coauthor] · <em>[Journal]</em> · [Year]</div>
+        <div class="chips"><a href="#">PDF</a><a href="#">Code</a><a href="#interactive">Interactive</a></div>
+      </article>
+      <article class="pub">
+        <h3>[Paper title]</h3>
+        <div class="meta">[Coauthor], <span class="me">[You]</span> · <em>[Conference]</em> · [Year]</div>
+        <div class="chips"><a href="#">PDF</a><a href="#">Poster</a></div>
+      </article>
+      <article class="pub">
+        <h3>[Paper title]</h3>
+        <div class="meta"><span class="me">[You]</span>, [Coauthor] · <em>[Preprint server]</em> · [Year]</div>
+        <div class="chips"><a href="#">PDF</a><a href="#">Slides</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="interactive">
+    <h2>Interactive model</h2>
+    <p class="lede">Example embedded simulation: a simple SIR epidemic model. It lives in its own folder, so it also has its own link you can share or put on a poster.</p>
+    <iframe class="sim-frame" id="sim-sir" src="sims/sir-model/" title="Interactive SIR epidemic model" loading="lazy"></iframe>
+    <div class="sim-caption">Open full screen: <a href="sims/sir-model/">sims/sir-model/</a></div>
+  </section>
+
+  <section id="files">
+    <h2>Talks &amp; files</h2>
+    <p class="lede">Each file gets a permanent link on this site, safe to print as a QR code on a poster.</p>
+    <div class="table-box">
+      <table>
+        <thead><tr><th>Title</th><th>Venue</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td>[Poster title]</td><td class="venue">[Conference], [Year]</td><td class="path"><a href="#">/files/[year]-poster.pdf</a></td></tr>
+          <tr><td>[Talk title]</td><td class="venue">[Seminar series], [Year]</td><td class="path"><a href="#">/files/[year]-slides.pdf</a></td></tr>
+          <tr><td>[Supplementary data]</td><td class="venue">[Paper short name]</td><td class="path"><a href="#">/files/[name]-data.zip</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Steph Willeniams</span>
+    <span>Hosted on GitHub Pages</span>
+  </div>
+</footer>
+
+<script>
+  // Let embedded simulations report their height so the frame fits without inner scrollbars.
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.type !== 'sim-height') return;
+    var frames = document.querySelectorAll('iframe.sim-frame');
+    for (var i = 0; i < frames.length; i++) {
+      if (frames[i].contentWindow === e.source) {
+        frames[i].style.height = Math.ceil(e.data.height) + 'px';
+      }
+    }
+  });
+</script>
+</body>
+</html>
