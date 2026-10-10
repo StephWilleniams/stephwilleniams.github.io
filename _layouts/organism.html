@@ -11,9 +11,7 @@ layout: default
 
 {% if o.image != "" %}
 <figure class="lead-figure" style="margin-top:0">
-  <div class="media" style="border-radius:10px">
-    <img src="{% if o.image contains '://' %}{{ o.image }}{% else %}{{ o.image | relative_url }}{% endif %}" alt="{{ o.image_alt }}" onerror="this.closest('figure').remove()">
-  </div>
+  <img src="{% if o.image contains '://' %}{{ o.image }}{% else %}{{ o.image | relative_url }}{% endif %}" alt="{{ o.image_alt }}" onerror="this.closest('figure').remove()">
   <figcaption>{{ o.image_caption }}{% if o.image_credit != "" %}<span class="credit">{% if o.image_credit_url != "" %}<a href="{{ o.image_credit_url }}">{{ o.image_credit }}</a>{% else %}{{ o.image_credit }}{% endif %}</span>{% endif %}</figcaption>
 </figure>
 {% endif %}

@@ -22,7 +22,7 @@ The full text of the update, in Markdown.
 It appears at `/updates/short-slug/`, at the top of `/updates/`, and in the homepage News list.
 
 **Add a figure:** upload images to `images/research/`. The research pages already look for:
-`internalCavity.png`, `flowExample.png`, `biofilms.png`, `channelFilling.png`.
+`internalCavity.jpg`, `flowExample.jpg`, `biofilms.png`, `channelFilling.png`.
 Any that are missing are simply hidden.
 
 **Add a study system:** add an entry to `_data/organisms.yml`, and a page at

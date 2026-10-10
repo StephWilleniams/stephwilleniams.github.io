@@ -14,15 +14,16 @@ Within hours of hatching, the Hawaiian bobtail squid has to recruit the biolumin
 
 With the Heath-Heckman lab, I built a fluid-dynamics model of breathing-driven bacterial transport inside the squid, using the method of regularized Stokeslets. Varying breathing strength, breathing rate, ciliary beating and squid size across tens of thousands of simulations, I ran a Sobol sensitivity analysis to find which factors control how long bacteria spend near the light organ.
 
+<div class="fig-row">
 <figure>
-  <img src="{{ '/images/research/internalCavity.png' | relative_url }}" alt="Diagram of breathing flow into the squid's mantle cavity and out through the funnel" loading="lazy" onerror="this.closest('figure').remove()">
-  <figcaption>Breathing flow into the mantle cavity (red) and out through the funnel.<span class="credit">Figure: Stephen Williams</span></figcaption>
+  <img src="{{ '/images/research/internalCavity.jpg' | relative_url }}" alt="Top view of a bobtail squid with the mantle cavity outlined in red and blue arrows showing water flowing in at two inflows and out through the funnel" loading="lazy" onerror="this.closest('figure').remove()">
+  <figcaption>Breathing flow: water enters the mantle cavity (outlined in red) at two inflows and leaves through the funnel (outflow).<span class="credit">Illustration: Stephen Williams</span></figcaption>
 </figure>
-
 <figure>
-  <img src="{{ '/images/research/flowExample.png' | relative_url }}" alt="Simulated flow field inside the mantle cavity, with streamlines and speed shown in color" loading="lazy" onerror="this.closest('figure').remove()">
-  <figcaption>Regularized-Stokeslet simulation of the mantle-cavity flow. White lines are particle streamlines; color is speed.<span class="credit">Figure: Stephen Williams, from <a href="https://doi.org/10.1098/rsif.2025.1136">Williams et al. (2026)</a></span></figcaption>
+  <img src="{{ '/images/research/flowExample.jpg' | relative_url }}" alt="Simulated flow field with white streamlines bending around four circular obstacles, colored by speed" loading="lazy" onerror="this.closest('figure').remove()">
+  <figcaption>A regularized-Stokeslet simulation. White lines are particle streamlines; color is flow speed.<span class="credit">Figure: Stephen Williams</span></figcaption>
 </figure>
+</div>
 
 ## What we found
 

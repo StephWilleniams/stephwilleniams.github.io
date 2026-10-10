@@ -117,7 +117,10 @@ figure { margin: 28px 0; }
 figure img { display: block; width: 100%; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); }
 figcaption { margin-top: 10px; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
 .credit { display: block; margin-top: 4px; font-size: 13px; color: var(--muted); }
-.lead-figure { max-width: 860px; }
+.lead-figure { max-width: 720px; }
+.lead-figure img { max-height: 520px; object-fit: contain; }
+.fig-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; align-items: start; margin: 28px 0; }
+.fig-row figure { margin: 0; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 24px; margin: 8px 0 0; }
 .facts dt { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 .facts dd { margin: 2px 0 0; }
