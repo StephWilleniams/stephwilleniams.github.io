@@ -17,3 +17,17 @@
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
   image_alt: A world map coloured by infection level, with a turn report and an End turn button
+
+- slug: thornwick-vale
+  name: Thornwick Vale
+  kind: Game
+  date: 2026-10-16
+  url: /llm-fun/thornwick-vale/
+  blurb: >-
+    A classic-style fantasy adventure that runs in one browser page. Pick one of seven
+    classes, level from 1 to 40 across five zones with a party of AI companions, and clear
+    five dungeons. Every character has written dialogue. Saves stay in your browser.
+  made: Built by Claude agents under my direction.
+  tags: [Fantasy RPG, Single page, Written dialogue, Claude]
+  image: /images/llm-fun/thornwick-vale.jpg
+  image_alt: The Thornwick Vale title screen, with class choices over a village scene
