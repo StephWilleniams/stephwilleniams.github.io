@@ -54,11 +54,11 @@
     Another animal that lives with photosynthetic algae. With Kaden Muffett, I am using deep learning on
     daily photographs to measure when Cassiopea polyps transform into juvenile jellyfish.
   methods: [Deep-learning object detection, Image analysis, Time-series data]
-  image: ""
-  image_alt: ""
-  image_caption: ''
-  image_credit: ""
-  image_credit_url: ""
+  image: https://commons.wikimedia.org/wiki/Special:FilePath/Cassiopea_jellyfish.jpg?width=900
+  image_alt: An upside-down jellyfish
+  image_caption: 'An upside-down jellyfish (<em>Cassiopea</em>).'
+  image_credit: '"Cassiopea jellyfish" by Jacopo Werther, public domain, via Wikimedia Commons'
+  image_credit_url: https://commons.wikimedia.org/wiki/File:Cassiopea_jellyfish.jpg
 
 - slug: chlamydomonas
   name: Chlamydomonas reinhardtii
