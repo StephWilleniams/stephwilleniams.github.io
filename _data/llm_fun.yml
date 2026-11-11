@@ -16,8 +16,9 @@
     Play the pathogen or the world's response, against the computer or a friend on the
     same device. Its Learn mode explains compartmental models and R0 at three levels.
   involvement: >-
-    Low. I wrote the brief and made a handful of design calls from my phone along the way,
-    such as clearer aims, region-level controls and turn-based play.
+    Light-touch direction. I wrote the brief and steered the design from my phone as it came
+    together, asking for clearer aims, region-level controls and turn-based play. It was
+    designed as a turn-based game for an educational date night.
   made: Built by Claude agents in one day, November 2026.
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
@@ -48,6 +49,12 @@
     A classic-style fantasy adventure that runs in one browser page. Pick one of seven
     classes, level from 1 to 40 across five zones with a party of AI companions, and clear
     five dungeons. Every character has written dialogue. Saves stay in your browser.
+  involvement: >-
+    Medium. I wrote an original design spec, but nothing too specific – motivated to make a
+    budget World of Warcraft. I did a bunch of playtesting, checked each part, and I have
+    finished the game from start to end (which was surprisingly fun!). The game went through
+    maybe 3-5 major versions, including a graphic overhaul, simulated encounter balancing, and
+    (the full version, not on the site) full (generated) voice acting and working multiplayer.
   made: About 45,000 lines of JavaScript, built by Claude agents over four days in October 2026.
   tags: [Fantasy RPG, Single page, Written dialogue, Claude]
   image: /images/llm-fun/thornwick-vale.jpg
