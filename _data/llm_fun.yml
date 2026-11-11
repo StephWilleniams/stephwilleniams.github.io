@@ -1,0 +1,19 @@
+# One entry per item on the LLM-fun page (/llm-fun/), newest first.
+# To add one: put its files in llm-fun/<slug>/ (an index.html there is served as is),
+# then add an entry here.
+# url: a path in this repo (e.g. /llm-fun/r-naught/) or a full URL.
+# image: a path in this repo or a full URL. If it fails to load, the card shows the name instead.
+
+- slug: r-naught
+  name: R-Naught
+  kind: Game
+  date: 2026-11-11
+  url: /llm-fun/r-naught/
+  blurb: >-
+    A turn-based pandemic strategy game on a stochastic SIRD model of 171 countries.
+    Play the pathogen or the world's response, against the computer or a friend on the
+    same device. Its Learn mode explains compartmental models and R0 at three levels.
+  made: Built by Claude agents under my direction.
+  tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
+  image: /images/llm-fun/r-naught.jpg
+  image_alt: A world map coloured by infection level, with a turn report and an End turn button

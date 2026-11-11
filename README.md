@@ -30,6 +30,9 @@ Any that are missing are simply hidden.
 
 **Share a file:** put it in `files/`. It is served at `/files/<name>`.
 
+**Add an LLM-fun item:** put its files in `llm-fun/<slug>/` (an `index.html` there is served as is),
+add a card image to `images/llm-fun/`, and add an entry to `_data/llm_fun.yml`. It appears on `/llm-fun/`.
+
 ## Layout
 
 - `index.html`: homepage
@@ -38,4 +41,5 @@ Any that are missing are simply hidden.
 - `_layouts/`: shared page templates (header, footer, post, organism page)
 - `assets/css/site.css`: styles
 - `sims/`: standalone interactive simulations
+- `llm-fun/`: side projects built with language models; the list comes from `_data/llm_fun.yml`
 - `redirects/`: forwards old URLs from the previous site to the new pages

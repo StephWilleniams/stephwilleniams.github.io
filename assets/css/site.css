@@ -105,6 +105,8 @@ a.card:hover { text-decoration: none; border-color: var(--accent); color: var(--
 .cards.compact .body { padding: 12px 14px 16px; gap: 4px; }
 .cards.compact h3 { font-size: 16px; }
 .cards.compact .body p { font-size: 14px; }
+/* Keeps cards at column width when there are only one or two (LLM-fun page). */
+.cards.fill { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 
 /* Long-form pages */
 .prose { max-width: 720px; }
