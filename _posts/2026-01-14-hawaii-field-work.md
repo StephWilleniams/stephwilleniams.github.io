@@ -62,10 +62,19 @@ Not everything on the bench was a squid.
 
 Night collecting leaves the days for the rest of the island.
 
-<div class="fig-row three crop-43">
+<figure>
+  <img src="{{ '/images/updates/hawaii-2026/leahi-sunrise.jpg' | relative_url }}" alt="Panorama from a crater rim at dawn: a green crater floor below, the city under heavy cloud to the left and an orange sky over the coast to the right, with walkers on the summit trail" loading="lazy">
+  <figcaption>Sunrise from the summit of Lēʻahi (Diamond Head).</figcaption>
+</figure>
+
+<div class="fig-row crop-43">
+<figure>
+  <img src="{{ '/images/updates/hawaii-2026/from-the-plane.jpg' | relative_url }}" alt="Green ridges and valleys seen from a plane window under scattered clouds, with the wing at the top of the frame" loading="lazy">
+  <figcaption>Oʻahu from the plane on the way in.</figcaption>
+</figure>
 <figure>
   <img src="{{ '/images/updates/hawaii-2026/south-shore.jpg' | relative_url }}" alt="A tree on a rocky shore framing calm water, hotel towers and the profile of Diamond Head" loading="lazy">
-  <figcaption>Lēʻahi (Diamond Head) from the south shore.</figcaption>
+  <figcaption>Lēʻahi from the south shore.</figcaption>
 </figure>
 <figure>
   <img src="{{ '/images/updates/hawaii-2026/harbor.jpg' | relative_url }}" alt="Black lava-rock breakwater, turquoise water and sailboat masts under a clear blue sky" loading="lazy">
@@ -74,6 +83,23 @@ Night collecting leaves the days for the rest of the island.
 <figure>
   <img src="{{ '/images/updates/hawaii-2026/windward-beach.jpg' | relative_url }}" alt="A wide sandy beach with turquoise surf, a small island offshore and steep dark cliffs to the right" loading="lazy">
   <figcaption>The windward coast, with Mānana (Rabbit Island) offshore.</figcaption>
+</figure>
+</div>
+
+## And the food
+
+<div class="fig-row three crop-43">
+<figure>
+  <img src="{{ '/images/updates/hawaii-2026/hawaiian-plate.jpg' | relative_url }}" alt="A wooden tray of Hawaiian dishes in small bowls around a leaf-wrapped laulau, with poi, shredded pork, lomi salmon, purple sweet potato and a square of haupia" loading="lazy">
+  <figcaption>A Hawaiian plate at Highway Inn in Kakaʻako: laulau, kālua pig, poi and lomi salmon.</figcaption>
+</figure>
+<figure>
+  <img src="{{ '/images/updates/hawaii-2026/plate-lunch.jpg' | relative_url }}" alt="A takeaway box of fried chicken, fried tofu and white rice" loading="lazy">
+  <figcaption>Plate lunch: fried chicken, tofu and rice.</figcaption>
+</figure>
+<figure>
+  <img src="{{ '/images/updates/hawaii-2026/poke.jpg' | relative_url }}" alt="A takeaway box with two kinds of cubed raw fish poke either side of a mound of white rice" loading="lazy">
+  <figcaption>Poke and rice.</figcaption>
 </figure>
 </div>
 
