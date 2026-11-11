@@ -1,6 +1,8 @@
 # One entry per item on the LLM-fun page (/llm-fun/), newest first.
 # To add one: put its files in llm-fun/<slug>/ (an index.html there is served as is),
 # then add an entry here.
+# involvement: one or two sentences on how hands-on you were (optional; shown as "My involvement").
+# made: one line on how it was built (optional).
 # url: a path in this repo (e.g. /llm-fun/r-naught/) or a full URL.
 # image: a path in this repo or a full URL. If it fails to load, the card shows the name instead.
 
@@ -13,7 +15,10 @@
     A turn-based pandemic strategy game on a stochastic SIRD model of 171 countries.
     Play the pathogen or the world's response, against the computer or a friend on the
     same device. Its Learn mode explains compartmental models and R0 at three levels.
-  made: Built by Claude agents under my direction.
+  involvement: >-
+    Low. I wrote the brief and made a handful of design calls from my phone along the way,
+    such as clearer aims, region-level controls and turn-based play.
+  made: Built by Claude agents in one day, November 2026.
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
   image_alt: A world map coloured by infection level, with a turn report and an End turn button
@@ -27,7 +32,7 @@
     A classic-style fantasy adventure that runs in one browser page. Pick one of seven
     classes, level from 1 to 40 across five zones with a party of AI companions, and clear
     five dungeons. Every character has written dialogue. Saves stay in your browser.
-  made: Built by Claude agents under my direction.
+  made: About 45,000 lines of JavaScript, built by Claude agents over four days in October 2026.
   tags: [Fantasy RPG, Single page, Written dialogue, Claude]
   image: /images/llm-fun/thornwick-vale.jpg
   image_alt: The Thornwick Vale title screen, with class choices over a village scene

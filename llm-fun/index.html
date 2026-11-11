@@ -1,13 +1,18 @@
 ---
 layout: default
 title: LLM-fun
-summary: Side projects built with large language models, for fun.
+summary: Side projects built by directing large language models, with notes on how involved I was.
 ---
 <header class="page-head">
   <div class="kicker mono">LLM-fun</div>
   <h1>Built with language models</h1>
-  <p class="lede-lg">Side projects I made by directing AI models, mostly for fun. Each card says what the thing is and how it was made.</p>
+  <p class="lede-lg">I've been doing my best to keep up with modern LLM tools and to play around with them. They look like they're here to stay, given results announced this year such as OpenAI's <a href="https://openai.com/index/navier-stokes-solution/">Navier–Stokes blow-up proof</a> and <a href="https://openai.com/index/building-scientific-understanding-with-academic-communities/">Yang–Mills existence proof</a>, and the <a href="https://terrytao.wordpress.com/2026/07/21/a-digestion-of-the-jacobian-conjecture-counterexample">counterexample to the Jacobian conjecture</a> found with Claude.</p>
 </header>
+
+<div class="prose">
+  <p>For research I take a much harder line. I've become a firm advocate for keeping a human in the loop and for extensive verification of anything an LLM produces for science. For learning what the tools can do, though, a low-stakes, relaxed approach can be very helpful.</p>
+  <p>Here are a few side projects I made by directing AI models, with different levels of intervention. Each card says what the thing is, how involved I was, and how it was made.</p>
+</div>
 
 <section aria-labelledby="projects">
   <h2 id="projects">Projects</h2>
@@ -22,6 +27,7 @@ summary: Side projects built with large language models, for fun.
         <div class="kicker mono">{{ item.kind }}{% if item.date %} · {{ item.date | date: "%b %Y" }}{% endif %}</div>
         <h3>{{ item.name }}</h3>
         <p>{{ item.blurb }}</p>
+        {% if item.involvement %}<p style="font-size:14px"><strong>My involvement:</strong> {{ item.involvement }}</p>{% endif %}
         {% if item.made %}<p class="mono" style="font-size:13px;color:var(--muted)">{{ item.made }}</p>{% endif %}
         {% if item.tags %}
         <ul class="tags" aria-label="Topics">
