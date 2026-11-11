@@ -123,6 +123,10 @@ figcaption { margin-top: 10px; font-size: 14px; color: var(--ink-2); line-height
 .lead-figure img { max-height: 520px; object-fit: contain; }
 .fig-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; align-items: start; margin: 28px 0; }
 .fig-row figure { margin: 0; }
+.fig-row.three { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; }
+.fig-row.crop-43 img { aspect-ratio: 4 / 3; object-fit: cover; }
+.fig-row.crop-34 img { aspect-ratio: 3 / 4; object-fit: cover; }
+figure video { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); background: #000; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px 24px; margin: 8px 0 0; }
 .facts dt { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 .facts dd { margin: 2px 0 0; }
