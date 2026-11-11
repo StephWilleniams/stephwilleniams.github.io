@@ -1,0 +1,38 @@
+---
+layout: default
+title: LLM-fun
+summary: Side projects built with large language models, for fun.
+---
+<header class="page-head">
+  <div class="kicker mono">LLM-fun</div>
+  <h1>Built with language models</h1>
+  <p class="lede-lg">Side projects I made by directing AI models, mostly for fun. Each card says what the thing is and how it was made.</p>
+</header>
+
+<section aria-labelledby="projects">
+  <h2 id="projects">Projects</h2>
+  <div class="cards fill">
+    {% for item in site.data.llm_fun %}
+    <a class="card" href="{% if item.url contains '://' %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}">
+      <div class="media">
+        {% if item.image and item.image != "" %}<img src="{% if item.image contains '://' %}{{ item.image }}{% else %}{{ item.image | relative_url }}{% endif %}" alt="{{ item.image_alt }}" loading="lazy" onerror="this.remove()">{% endif %}
+        <span class="fallback" aria-hidden="true">{{ item.name }}</span>
+      </div>
+      <div class="body">
+        <div class="kicker mono">{{ item.kind }}{% if item.date %} · {{ item.date | date: "%b %Y" }}{% endif %}</div>
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.blurb }}</p>
+        {% if item.made %}<p class="mono" style="font-size:13px;color:var(--muted)">{{ item.made }}</p>{% endif %}
+        {% if item.tags %}
+        <ul class="tags" aria-label="Topics">
+          {% for t in item.tags %}<li>{{ t }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        <span class="more">Open →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<p class="note">These are experiments, not research outputs. Where one uses a scientific model, its own pages say what the model includes and what it leaves out.</p>
