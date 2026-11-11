@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>One day of a biofilm selection model · Stephen Williams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Layout: chart on the left, sliders on the right; stacks to one column on a phone. */
+    :root {
+      --ink: #16202A; --ink-2: #3D4955; --muted: #5B6672;
+      --line: #E3E7EC; --line-2: #C9D1DA; --panel: #F8FAFB; --accent: #0B4F8A;
+      --surface: #FFFFFF;
+      /* Series colours: fixed order, checked for colour-blind separation. Each also has its own dash. */
+      --s-c: #2a78d6; --s-p: #eb6834; --s-b: #1baf7a; --s-s: #eda100; --s-a: #e87ba4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--panel); color: var(--ink); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .app { display: flex; flex-wrap: wrap; gap: 24px; padding: 20px; }
+    .stage { flex: 2 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+    .chart-box { position: relative; width: 100%; aspect-ratio: 1.55; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+    canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+    .tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; font-size: 13px; box-shadow: 0 2px 8px rgba(22, 32, 42, 0.12); min-width: 150px; }
+    .tip[hidden] { display: none; }
+    .tip .t { color: var(--muted); margin-bottom: 4px; }
+    .tip .r { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
+    .key { display: inline-block; width: 18px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 6px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); }
+    .legend span { white-space: nowrap; }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+    .readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+    .readouts div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+    .readouts dt { font-size: 12px; color: var(--muted); }
+    .readouts dd { margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .controls { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+    .hint { margin: 0; color: var(--ink-2); font-size: 14px; }
+    .field { display: flex; flex-direction: column; gap: 2px; }
+    .field label { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+    .field output { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+    input[type=range] { width: 100%; height: 30px; accent-color: var(--accent); }
+    select, button {
+      font: inherit; color: var(--ink); background: var(--surface); min-height: 44px; padding: 0 12px;
+      border: 1px solid var(--line-2); border-radius: 8px;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--accent); color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+    .seg button { border: 0; border-radius: 0; min-height: 36px; }
+    .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+    details { font-size: 14px; }
+    summary { cursor: pointer; color: var(--accent); min-height: 32px; }
+    .table-box { overflow-x: auto; }
+    table { border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+    th, td { padding: 4px 10px; text-align: right; border-bottom: 1px solid var(--line); }
+    th:first-child, td:first-child { text-align: left; }
+    .eq { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="stage">
+      <div class="bar">
+        <div class="legend" id="legend" aria-label="Legend"></div>
+        <div class="seg" role="group" aria-label="Vertical scale">
+          <button type="button" id="scale-lin" aria-pressed="true">Linear</button>
+          <button type="button" id="scale-log" aria-pressed="false">Log</button>
+        </div>
+      </div>
+      <div class="chart-box" id="box">
+        <canvas id="chart" role="img" aria-label="Model populations over one day"></canvas>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <dl class="readouts" aria-live="polite">
+        <div><dt>Biofilm share of bacteria at 24 h</dt><dd id="ro-share"></dd></div>
+        <div><dt>Bacteria at 24 h (P + B)</dt><dd id="ro-bac"></dd></div>
+        <div><dt>Carbon left at 24 h</dt><dd id="ro-c"></dd></div>
+      </dl>
+      <details>
+        <summary>Show the numbers</summary>
+        <div class="table-box"><table id="table"></table></div>
+      </details>
+    </div>
+
+    <div class="controls">
+      <p class="hint">One 24-hour culture of bacteria that can live free in the liquid or attached in a biofilm, with a predator in each place. Move a slider and the day is re-solved.</p>
+      <div class="field">
+        <label for="preset">Start from</label>
+        <select id="preset">
+          <option value="paper">Example from the paper's code</option>
+          <option value="none">No predators</option>
+          <option value="ciliate">Planktonic predator only</option>
+          <option value="amoeba">Biofilm predator only</option>
+        </select>
+      </div>
+      <div id="sliders"></div>
+      <details>
+        <summary>More parameters</summary>
+        <div id="sliders-more"></div>
+      </details>
+      <button type="button" id="reset">Reset to the example</button>
+      <p class="eq">Model and default values from Williams et al., <em>Bull. Math. Biol.</em> 88, 132 (2026), as set in the paper's public code. Populations are non-dimensional, scaled so the starting carbon is 1. Solved with fourth-order Runge–Kutta.</p>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Model: biofilm formation with predation (Williams et al. 2026) ----------
+    // State: C carbon, P planktonic bacteria, B biofilm bacteria, S planktonic predator, A biofilm predator.
+    // Non-dimensional as in the paper's code: time in days, liquid volume 3 ml, surface area 8 cm^2.
+    var ND_T = 24, VOL = 3, SURF = 8;
+    var FIXED = { eb: 0.2, eS: 0.5, eA: 0.33, HC: 1.0 * VOL, HP: 1.0 * VOL, HB: 0.1 * SURF, a: 0.01 * SURF, chiMin: 0.0005 };
+    var Y0 = { C: 1.0, P: 1.0, B: 0.01 };
+
+    // Sliders are in the dimensional units the paper's code takes as input.
+    var SLIDERS = [
+      { id: 'S0', label: 'Planktonic predator at the start, S(0)', min: 0, max: 0.15, step: 0.005, def: 0.03, digits: 3, unit: '' },
+      { id: 'A0', label: 'Biofilm predator at the start, A(0)', min: 0, max: 0.04, step: 0.001, def: 0.008, digits: 3, unit: '' },
+      { id: 'chiMax', label: 'Maximum attachment rate', min: 0, max: 0.3, step: 0.005, def: 0.1, digits: 3, unit: ' cm/h' },
+      { id: 'chiOff', label: 'Detachment rate', min: 0, max: 0.05, step: 0.001, def: 0.005, digits: 3, unit: ' /h' },
+      { id: 'rP', label: 'Planktonic growth rate', min: 0.05, max: 0.4, step: 0.01, def: 0.21, digits: 2, unit: ' /h' },
+      { id: 'rB', label: 'Biofilm growth rate', min: 0, max: 0.05, step: 0.001, def: 0.007, digits: 3, unit: ' /h' }
+    ];
+    var SLIDERS_MORE = [
+      { id: 'gS', label: 'Planktonic predator growth rate', min: 0, max: 0.3, step: 0.01, def: 0.12, digits: 2, unit: ' /h' },
+      { id: 'gA', label: 'Biofilm predator growth rate', min: 0, max: 0.3, step: 0.01, def: 0.09, digits: 2, unit: ' /h' }
+    ];
+    var ALL = SLIDERS.concat(SLIDERS_MORE);
+    var PRESETS = {
+      paper: {},
+      none: { S0: 0, A0: 0 },
+      ciliate: { A0: 0 },
+      amoeba: { S0: 0 }
+    };
+
+    function ndParams(v) {
+      return {
+        rP: (1 / FIXED.eb) * v.rP * ND_T, rB: (1 / FIXED.eb) * v.rB * ND_T,
+        rS: (1 / FIXED.eS) * v.gS * ND_T, rA: (1 / FIXED.eA) * v.gA * ND_T,
+        chiMax: (SURF / VOL) * v.chiMax * ND_T, chiMin: (SURF / VOL) * FIXED.chiMin * ND_T,
+        chiOff: v.chiOff * ND_T
+      };
+    }
+
+    function rhs(y, p, out) {
+      var C = y[0], P = y[1], B = y[2], S = y[3], A = y[4];
+      var fC = C / (C + FIXED.HC), fP = P / (P + FIXED.HP), fB = B / (B + FIXED.HB);
+      var chiOn = (p.chiMax * FIXED.a + p.chiMin * B) / (FIXED.a + B);
+      out[0] = -p.rP * fC * P - p.rB * fC * B;
+      out[1] = FIXED.eb * p.rP * fC * P - p.rS * fP * S - chiOn * P + p.chiOff * B;
+      out[2] = FIXED.eb * p.rB * fC * B - p.rA * fB * A + chiOn * P - p.chiOff * B;
+      out[3] = FIXED.eS * p.rS * fP * S;
+      out[4] = FIXED.eA * p.rA * fB * A;
+    }
+
+    var STEPS = 2400, EVERY = 10;   // RK4 with a 36-second step; store a point every 6 minutes
+    function solve(v) {
+      var p = ndParams(v), h = 1 / STEPS;
+      var y = [Y0.C, Y0.P, Y0.B, v.S0, v.A0];
+      var k1 = [0, 0, 0, 0, 0], k2 = [0, 0, 0, 0, 0], k3 = [0, 0, 0, 0, 0], k4 = [0, 0, 0, 0, 0], tmp = [0, 0, 0, 0, 0];
+      var t = [0], series = [[y[0]], [y[1]], [y[2]], [y[3]], [y[4]]], i, j;
+      for (i = 1; i <= STEPS; i++) {
+        rhs(y, p, k1);
+        for (j = 0; j < 5; j++) tmp[j] = y[j] + 0.5 * h * k1[j];
+        rhs(tmp, p, k2);
+        for (j = 0; j < 5; j++) tmp[j] = y[j] + 0.5 * h * k2[j];
+        rhs(tmp, p, k3);
+        for (j = 0; j < 5; j++) tmp[j] = y[j] + h * k3[j];
+        rhs(tmp, p, k4);
+        for (j = 0; j < 5; j++) y[j] = Math.max(0, y[j] + h / 6 * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]));
+        if (i % EVERY === 0) { t.push(i * h * ND_T); for (j = 0; j < 5; j++) series[j].push(y[j]); }
+      }
+      return { t: t, y: series };
+    }
+    window.__biofilm = { solve: solve, defaults: function () { var d = {}; ALL.forEach(function (s) { d[s.id] = s.def; }); return d; } };
+
+    // ---------- Chart ----------
+    var css = getComputedStyle(document.documentElement);
+    function tok(n) { return css.getPropertyValue(n).trim(); }
+    var SERIES = [
+      { key: 'C', name: 'Carbon', color: tok('--s-c'), dash: [] },
+      { key: 'P', name: 'Planktonic bacteria', color: tok('--s-p'), dash: [] },
+      { key: 'B', name: 'Biofilm bacteria', color: tok('--s-b'), dash: [8, 4] },
+      { key: 'S', name: 'Planktonic predator', color: tok('--s-s'), dash: [2, 4] },
+      { key: 'A', name: 'Biofilm predator', color: tok('--s-a'), dash: [8, 4, 2, 4] }
+    ];
+    var INK = tok('--ink'), INK2 = tok('--ink-2'), MUTED = tok('--muted'), GRID = tok('--line'), SURFACE = tok('--surface');
+
+    var canvas = document.getElementById('chart'), ctx = canvas.getContext('2d');
+    var box = document.getElementById('box'), tip = document.getElementById('tip');
+    var state = { values: window.__biofilm.defaults(), log: false, sol: null, hover: null, W: 0, H: 0 };
+    var M = { l: 54, r: 34, t: 14, b: 40 };
+    var LOG_MIN = 1e-4;
+
+    function fmt(x) {
+      if (x === 0) return '0';
+      if (x < 0.001) return x.toExponential(1);
+      if (x < 0.1) return x.toFixed(4);
+      return x.toFixed(3);
+    }
+    function yMax() {
+      var m = 0;
+      state.sol.y.forEach(function (s) { s.forEach(function (v) { if (v > m) m = v; }); });
+      var nice = [1.1, 1.5, 2, 3, 4, 6, 8, 12];
+      for (var i = 0; i < nice.length; i++) if (m <= nice[i] * 0.98) return nice[i];
+      return Math.ceil(m);
+    }
+    function scales() {
+      var x0 = M.l, x1 = state.W - M.r, y0 = state.H - M.b, y1 = M.t, top = yMax();
+      var lmin = Math.log10(LOG_MIN), lmax = Math.log10(Math.max(top, 2));
+      return {
+        x: function (t) { return x0 + (x1 - x0) * t / 24; },
+        y: state.log
+          ? function (v) { return y0 + (y1 - y0) * (Math.log10(Math.max(v, LOG_MIN)) - lmin) / (lmax - lmin); }
+          : function (v) { return y0 + (y1 - y0) * v / top; },
+        x0: x0, x1: x1, y0: y0, y1: y1, top: top
+      };
+    }
+
+    function draw() {
+      var s = scales(), i, j;
+      ctx.clearRect(0, 0, state.W, state.H);
+      ctx.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+      ctx.lineWidth = 1; ctx.setLineDash([]);
+      // Grid and vertical-axis ticks
+      var ticks = [];
+      if (state.log) { for (var e = Math.log10(LOG_MIN); Math.pow(10, e) <= Math.max(s.top, 2) * 1.0001; e++) ticks.push(Math.pow(10, e)); }
+      else { var steps = [0.2, 0.25, 0.5, 1, 2, 4], st = steps[steps.length - 1]; for (i = 0; i < steps.length; i++) if (s.top / steps[i] <= 6.5) { st = steps[i]; break; } for (var tv = 0; tv <= s.top + 1e-9; tv += st) ticks.push(tv); }
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ticks.forEach(function (v) {
+        var py = Math.round(s.y(v)) + 0.5;
+        ctx.strokeStyle = GRID; ctx.beginPath(); ctx.moveTo(s.x0, py); ctx.lineTo(s.x1, py); ctx.stroke();
+        ctx.fillStyle = MUTED;
+        ctx.fillText(state.log ? (v >= 1 ? String(v) : v.toExponential(0).replace('e-', 'e−')) : (Math.round(v * 100) / 100).toString(), s.x0 - 8, py);
+      });
+      // Time axis
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for (i = 0; i <= 24; i += 4) {
+        ctx.fillStyle = MUTED; ctx.fillText(String(i), s.x(i), s.y0 + 6);
+      }
+      ctx.fillStyle = INK2; ctx.fillText('Time (hours)', (s.x0 + s.x1) / 2, s.y0 + 22);
+      ctx.save(); ctx.translate(13, (s.y0 + s.y1) / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = 'middle';
+      ctx.fillText('Population, N(t)', 0, 0); ctx.restore();
+      ctx.strokeStyle = tok('--line-2'); ctx.beginPath(); ctx.moveTo(s.x0, s.y0 + 0.5); ctx.lineTo(s.x1, s.y0 + 0.5); ctx.stroke();
+
+      // Lines
+      ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      SERIES.forEach(function (ser, k) {
+        var ys = state.sol.y[k];
+        ctx.strokeStyle = ser.color; ctx.setLineDash(ser.dash); ctx.beginPath();
+        var started = false;
+        for (j = 0; j < ys.length; j++) {
+          if (state.log && ys[j] <= 0) continue;
+          var px = s.x(state.sol.t[j]), py = Math.min(s.y0, s.y(ys[j]));
+          if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Letter labels at the line ends, spread apart with a leader when they would collide
+      var ends = SERIES.map(function (ser, k) {
+        var v = state.sol.y[k][state.sol.y[k].length - 1];
+        return { key: ser.key, color: ser.color, y: Math.min(s.y0, s.y(v)), skip: state.log && v <= 0 };
+      }).filter(function (d) { return !d.skip; }).sort(function (a, b) { return a.y - b.y; });
+      var gap = 14;
+      ends.forEach(function (d) { d.ly = d.y; });
+      for (i = 1; i < ends.length; i++) if (ends[i].ly - ends[i - 1].ly < gap) ends[i].ly = ends[i - 1].ly + gap;
+      if (ends.length && ends[ends.length - 1].ly > s.y0 + 2) {
+        ends[ends.length - 1].ly = s.y0 + 2;
+        for (i = ends.length - 2; i >= 0; i--) if (ends[i + 1].ly - ends[i].ly < gap) ends[i].ly = ends[i + 1].ly - gap;
+      }
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.font = '600 12px "IBM Plex Sans", system-ui, sans-serif';
+      ends.forEach(function (d) {
+        ctx.strokeStyle = d.color; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(s.x1 + 2, d.y); ctx.lineTo(s.x1 + 10, d.ly); ctx.stroke();
+        ctx.fillStyle = d.color; ctx.beginPath(); ctx.arc(s.x1 + 12, d.ly, 3, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = INK; ctx.fillText(d.key, s.x1 + 18, d.ly);
+      });
+
+      // Hover crosshair
+      if (state.hover !== null) {
+        var idx = state.hover, hx = s.x(state.sol.t[idx]);
+        ctx.strokeStyle = MUTED; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(hx + 0.5, s.y1); ctx.lineTo(hx + 0.5, s.y0); ctx.stroke();
+        SERIES.forEach(function (ser, k) {
+          var v = state.sol.y[k][idx]; if (state.log && v <= 0) return;
+          ctx.fillStyle = SURFACE; ctx.beginPath(); ctx.arc(hx, s.y(v), 6, 0, 2 * Math.PI); ctx.fill();
+          ctx.fillStyle = ser.color; ctx.beginPath(); ctx.arc(hx, s.y(v), 4, 0, 2 * Math.PI); ctx.fill();
+        });
+      }
+    }
+
+    function showTip(idx, clientX) {
+      var rows = SERIES.map(function (ser, k) {
+        return '<div class="r"><span><span class="key" style="border-top-color:' + ser.color + (ser.dash.length ? ';border-top-style:dashed' : '') + '"></span>' + ser.name + '</span><strong>' + fmt(state.sol.y[k][idx]) + '</strong></div>';
+      }).join('');
+      tip.innerHTML = '<div class="t">' + state.sol.t[idx].toFixed(1) + ' h</div>' + rows;
+      tip.hidden = false;
+      var r = box.getBoundingClientRect(), x = clientX - r.left, w = tip.offsetWidth;
+      tip.style.left = Math.max(6, Math.min(r.width - w - 6, x + (x > r.width / 2 ? -w - 14 : 14))) + 'px';
+      tip.style.top = '10px';
+    }
+    function onMove(ev) {
+      var r = canvas.getBoundingClientRect(), s = scales();
+      var tt = (ev.clientX - r.left - s.x0) / (s.x1 - s.x0) * 24;
+      if (tt < -0.5 || tt > 24.5) return onLeave();
+      var idx = Math.max(0, Math.min(state.sol.t.length - 1, Math.round(tt / 24 * (state.sol.t.length - 1))));
+      state.hover = idx; draw(); showTip(idx, ev.clientX);
+    }
+    function onLeave() { state.hover = null; tip.hidden = true; draw(); }
+    canvas.addEventListener('pointermove', onMove);
+    canvas.addEventListener('pointerdown', onMove);
+    canvas.addEventListener('pointerleave', onLeave);
+
+    // ---------- Read-outs and table ----------
+    function updateText() {
+      var y = state.sol.y, n = y[0].length - 1;
+      var bac = y[1][n] + y[2][n];
+      document.getElementById('ro-share').textContent = bac > 0 ? (100 * y[2][n] / bac).toFixed(1) + '%' : 'n/a';
+      document.getElementById('ro-bac').textContent = fmt(bac);
+      document.getElementById('ro-c').textContent = fmt(y[0][n]);
+      var hours = [0, 4, 8, 12, 16, 20, 24];
+      var html = '<thead><tr><th>Hour</th>' + SERIES.map(function (s) { return '<th>' + s.key + '</th>'; }).join('') + '</tr></thead><tbody>';
+      hours.forEach(function (hr) {
+        var idx = Math.round(hr / 24 * n);
+        html += '<tr><td>' + hr + '</td>' + SERIES.map(function (s, k) { return '<td>' + fmt(y[k][idx]) + '</td>'; }).join('') + '</tr>';
+      });
+      document.getElementById('table').innerHTML = html + '</tbody>';
+    }
+
+    function recompute() { state.sol = solve(state.values); updateText(); draw(); }
+
+    // ---------- Controls ----------
+    function buildSliders(list, hostId) {
+      var host = document.getElementById(hostId);
+      list.forEach(function (sl) {
+        var wrap = document.createElement('div'); wrap.className = 'field';
+        wrap.innerHTML = '<label for="sl-' + sl.id + '"><span>' + sl.label + '</span><output id="out-' + sl.id + '" for="sl-' + sl.id + '"></output></label>' +
+          '<input type="range" id="sl-' + sl.id + '" min="' + sl.min + '" max="' + sl.max + '" step="' + sl.step + '" value="' + sl.def + '">';
+        host.appendChild(wrap);
+        var input = wrap.querySelector('input');
+        input.addEventListener('input', function () { state.values[sl.id] = parseFloat(input.value); syncOutputs(); recompute(); });
+      });
+    }
+    function syncOutputs() {
+      ALL.forEach(function (sl) {
+        document.getElementById('sl-' + sl.id).value = state.values[sl.id];
+        document.getElementById('out-' + sl.id).textContent = state.values[sl.id].toFixed(sl.digits) + sl.unit;
+      });
+    }
+    function applyPreset(name) {
+      var v = window.__biofilm.defaults(), o = PRESETS[name] || {};
+      Object.keys(o).forEach(function (k) { v[k] = o[k]; });
+      state.values = v; syncOutputs(); recompute();
+    }
+    buildSliders(SLIDERS, 'sliders'); buildSliders(SLIDERS_MORE, 'sliders-more');
+    document.getElementById('preset').addEventListener('change', function (e) { applyPreset(e.target.value); });
+    document.getElementById('reset').addEventListener('click', function () { document.getElementById('preset').value = 'paper'; applyPreset('paper'); });
+    function setScale(log) {
+      state.log = log;
+      document.getElementById('scale-lin').setAttribute('aria-pressed', String(!log));
+      document.getElementById('scale-log').setAttribute('aria-pressed', String(log));
+      draw();
+    }
+    document.getElementById('scale-lin').addEventListener('click', function () { setScale(false); });
+    document.getElementById('scale-log').addEventListener('click', function () { setScale(true); });
+
+    document.getElementById('legend').innerHTML = SERIES.map(function (s) {
+      return '<span><span class="key" style="border-top-color:' + s.color + (s.dash.length ? ';border-top-style:dashed' : '') + '"></span>' + s.key + ' · ' + s.name + '</span>';
+    }).join('');
+
+    new ResizeObserver(function () {
+      var r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      state.W = r.width; state.H = r.height;
+      canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (state.sol) draw();
+    }).observe(canvas);
+
+    syncOutputs(); recompute();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (state.sol) draw(); });
+
+    // Tell the embedding page how tall this is, so the frame fits without inner scrollbars.
+    function report() {
+      if (window.parent !== window) window.parent.postMessage({ type: 'sim-height', height: document.documentElement.scrollHeight }, '*');
+    }
+    new ResizeObserver(report).observe(document.body);
+    document.querySelectorAll('details').forEach(function (d) { d.addEventListener('toggle', report); });
+  </script>
+</body>
+</html>

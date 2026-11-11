@@ -26,5 +26,5 @@ Fitting a delay differential equation model of population growth suggests the se
 
 ## Outputs
 
-- Muffett, K. M., Williams, S., et al. Low-abundance taxa drive host microbiome response to temperature stress. *Nature Communications*, in press (2026). [Preprint](https://doi.org/10.1101/2025.09.18.677205) · [Update]({{ '/updates/low-abundance-taxa-drive-host-microbiome-response-to-temperature-stress/' | relative_url }})
+- Muffett, K. M., Williams, S., et al. *Exaiptasia diaphana* core microbiome members are lost under climate change conditions despite host thermal tolerance. *Nature Communications* (2026). [Paper](https://doi.org/10.1038/s41467-026-79034-2) · [Preprint](https://doi.org/10.1101/2025.09.18.677205) · [Update]({{ '/updates/low-abundance-taxa-drive-host-microbiome-response-to-temperature-stress/' | relative_url }})
 - Ongoing: Modeling and identifiability in size-structured populations of *Exaiptasia diaphana*.

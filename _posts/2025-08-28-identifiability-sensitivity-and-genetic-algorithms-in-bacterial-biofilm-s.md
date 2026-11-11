@@ -9,6 +9,8 @@ links:
     url: https://arxiv.org/abs/2508.20219
   - label: Code
     url: https://github.com/StephWilleniams/BiofilmModelAnalysis
+  - label: Interactive
+    url: /interactive/#biofilm-day
 ---
 
 **Update (2026):** now published in the *Bulletin of Mathematical Biology*.

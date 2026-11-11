@@ -39,7 +39,9 @@ Try a simplified version of the flow method in the [interactive Stokeslet demo](
 ## Outputs
 
 - Williams, S., Ruiz, K. A., Heath-Heckman, E., Rutter, E. M., Khatri, S. Thermal stress disrupts symbiotic fluid dynamics in bobtail squid. *J. R. Soc. Interface* 23, 20251136 (2026). [Paper](https://doi.org/10.1098/rsif.2025.1136) · [Code](https://github.com/StephWilleniams/SquidInternalFlows)
-- [Poster: MDDLS 2025]({{ '/updates/mddls-2025/' | relative_url }}) · [Invited talk: AMS Western Sectional 2026]({{ '/updates/ams-western-sectional/' | relative_url }})
+- [Poster: MDDLS 2025]({{ '/updates/mddls-2025/' | relative_url }}) · [Invited talk: AMS Western Sectional 2026]({{ '/updates/ams-western-sectional/' | relative_url }}) · [Talk: CassiopeaBase MATH-BIO 2026]({{ '/updates/cassiopeabase-math-bio-2026/' | relative_url }})
+- Ongoing: Exploring the impacts of squid breathing dynamics on bacterial symbiont acquisition.
+- [Interactive: Stokes flow from point forces]({{ '/interactive/#stokeslets' | relative_url }})
 
 ## References
 
