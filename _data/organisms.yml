@@ -39,10 +39,10 @@
     Exaiptasia hosts the same algae as reef-building corals and bleaches the same way. I build population
     models of how heat stress, and the anemone's microbiome, shape its growth and reproduction.
   methods: [Delay differential equations, Size-structured models, Generalized additive models, Identifiability]
-  image: ""
-  image_alt: ""
-  image_caption: ''
-  image_credit: ""
+  image: /images/research/exaiptasia.jpg
+  image_alt: An Exaiptasia anemone seen from above in a clear container, its long tentacles spread around the mouth
+  image_caption: 'An <em>Exaiptasia diaphana</em> anemone, seen from above.'
+  image_credit: 'Photo: Sophia MacVittie, Sogin Lab, University of California, Riverside'
   image_credit_url: ""
 
 - slug: cassiopea
