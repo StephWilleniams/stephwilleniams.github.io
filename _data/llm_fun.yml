@@ -3,7 +3,7 @@
 # then add an entry here.
 # involvement: one or two sentences on how hands-on you were (optional; shown as "My involvement").
 # made: one line on how it was built (optional).
-# url: a path in this repo (e.g. /llm-fun/r-naught/) or a full URL.
+# url: a path in this repo (e.g. /llm-fun/r-naught/, or a PDF in llm-fun/<slug>/) or a full URL.
 # image: a path in this repo or a full URL. If it fails to load, the card shows the name instead.
 
 - slug: r-naught
@@ -22,6 +22,22 @@
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
   image_alt: A world map coloured by infection level, with a turn report and an End turn button
+
+- slug: unwalled-garden
+  name: The Unwalled Garden
+  kind: Book
+  date: 2026-10-19
+  url: /llm-fun/unwalled-garden/The-Unwalled-Garden.pdf
+  blurb: >-
+    I always wanted to write a book about the popular history of interdisciplinary research;
+    however, as a postdoc, I'm very much too busy, and this one falls under my 'need to intensely
+    verify' category. However, I experimented with Gemini Argon 4 and Fable 5.1 back-and-forth a
+    few times to put together a book on it (I also helped!); from what I have read so far, it
+    seemed like an amusing (albeit very boringly written/phrased – it's written in claudish!) book.
+  made: 'A 294-page manuscript draft (PDF): "How the Collision of Disciplines Shaped Modern Discovery".'
+  tags: [Popular history, Interdisciplinary research, Gemini, Claude]
+  image: /images/llm-fun/unwalled-garden.jpg
+  image_alt: The title page of The Unwalled Garden, a manuscript draft
 
 - slug: thornwick-vale
   name: Thornwick Vale
