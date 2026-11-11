@@ -30,11 +30,14 @@
   date: 2026-10-19
   url: /llm-fun/unwalled-garden/The-Unwalled-Garden.pdf
   blurb: >-
-    I always wanted to write a book about the popular history of interdisciplinary research;
-    however, as a postdoc, I'm very much too busy, and this one falls under my 'need to intensely
-    verify' category. However, I experimented with Gemini Argon 4 and Fable 5.1 back-and-forth a
-    few times to put together a book on it (I also helped!); from what I have read so far, it
-    seemed like an amusing (albeit very boringly written/phrased – it's written in claudish!) book.
+    A popular history of interdisciplinary research: the book I always wanted to write but, as
+    a postdoc, am very much too busy for. From what I have read so far it is an amusing book,
+    albeit very boringly phrased (it's written in claudish!).
+  involvement: >-
+    Light-touch. I passed drafts back and forth between Gemini Argon 4 and Fable 5.1 a few
+    times to put it together, and helped along the way. It falls under my 'need to intensely
+    verify' category, so I shan't vouch for the book's factual correctness (perhaps some time
+    I will check it all)!
   made: 'A 294-page manuscript draft (PDF): "How the Collision of Disciplines Shaped Modern Discovery".'
   tags: [Popular history, Interdisciplinary research, Gemini, Claude]
   image: /images/llm-fun/unwalled-garden.jpg

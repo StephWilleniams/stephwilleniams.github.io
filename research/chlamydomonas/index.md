@@ -25,6 +25,6 @@ I am generalizing these results to a broader class of microswimmers, showing how
 
 ## Outputs
 
-- Williams, S., Jeanneret, R., Tuval, I., Polin, M. Confinement-induced accumulation and de-mixing of microscopic active–passive mixtures. *Nature Communications* 13, 4776 (2022). [Paper](https://doi.org/10.1038/s41467-022-32520-9) · [Code](https://github.com/StephWilleniams/ActivePassiveConfinement)
+- Williams, S., Jeanneret, R., Tuval, I., Polin, M. Confinement-induced accumulation and de-mixing of microscopic active–passive mixtures. *Nature Communications* 13, 4776 (2022). [Paper](https://doi.org/10.1038/s41467-022-32520-9) · [Preprint](https://arxiv.org/abs/2111.09763) · [Code](https://github.com/StephWilleniams/ActivePassiveConfinement)
 - In preparation: Williams, S., Khatri, S., Polin, M. Controlling passive particle distributions in mixed systems through active scattering events.
 - PhD thesis: *Mixed Active–Passive Systems in Confinement*, University of Warwick (2022).
