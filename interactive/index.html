@@ -1,0 +1,24 @@
+---
+layout: default
+title: Interactive
+summary: Models from my research that you can run in the browser.
+---
+<header class="page-head">
+  <div class="kicker mono">Interactive</div>
+  <h1>Models you can run</h1>
+  <p class="lede-lg">Small versions of the models behind my papers, running in your browser. Change a parameter and see what it does.</p>
+</header>
+
+<section id="biofilm-day">
+  <h2>One day of a biofilm selection model</h2>
+  <p class="lede">Bacteria in a culture can live free in the liquid or attach to a surface as a biofilm, and each way of living has its own predator. This is the model from our <a href="{{ '/updates/identifiability-sensitivity-and-genetic-algorithms-in-bacterial-biofilm-s/' | relative_url }}">paper on biofilm selection</a>, solved over a single 24-hour culture. Change the predators or the attachment rates and watch how the balance between free and attached bacteria shifts by the end of the day.</p>
+  <iframe class="sim-frame" id="sim-biofilm" src="{{ '/sims/biofilm-day/' | relative_url }}" title="Interactive biofilm selection model over one day" loading="lazy"></iframe>
+  <div class="sim-caption">Open full screen: <a href="{{ '/sims/biofilm-day/' | relative_url }}">sims/biofilm-day/</a> · More on this project: <a href="{{ '/research/vibrio-fischeri/' | relative_url }}"><em>Vibrio fischeri</em></a></div>
+</section>
+
+<section id="stokeslets">
+  <h2>Stokes flow from point forces</h2>
+  <p class="lede">At the scale of bacteria and the cilia that move them, viscosity dominates and flows are built from point forces called Stokeslets. Regularized Stokeslets are the method behind my squid flow models. Click to add one, drag it around, and watch tracers follow the flow.</p>
+  <iframe class="sim-frame" id="sim-stokeslet" src="{{ '/sims/stokeslet-flow/' | relative_url }}" title="Interactive regularized Stokeslet flow field" loading="lazy"></iframe>
+  <div class="sim-caption">Open full screen: <a href="{{ '/sims/stokeslet-flow/' | relative_url }}">sims/stokeslet-flow/</a> · More on this project: <a href="{{ '/research/euprymna-scolopes/' | relative_url }}"><em>Euprymna scolopes</em></a></div>
+</section>

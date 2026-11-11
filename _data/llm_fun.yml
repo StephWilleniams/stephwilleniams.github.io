@@ -3,7 +3,7 @@
 # then add an entry here.
 # involvement: one or two sentences on how hands-on you were (optional; shown as "My involvement").
 # made: one line on how it was built (optional).
-# url: a path in this repo (e.g. /llm-fun/r-naught/) or a full URL.
+# url: a path in this repo (e.g. /llm-fun/r-naught/, or a PDF in llm-fun/<slug>/) or a full URL.
 # image: a path in this repo or a full URL. If it fails to load, the card shows the name instead.
 
 - slug: r-naught
@@ -16,12 +16,29 @@
     Play the pathogen or the world's response, against the computer or a friend on the
     same device. Its Learn mode explains compartmental models and R0 at three levels.
   involvement: >-
-    Low. I wrote the brief and made a handful of design calls from my phone along the way,
-    such as clearer aims, region-level controls and turn-based play.
+    Light-touch direction. I wrote the brief and steered the design from my phone as it came
+    together, asking for clearer aims, region-level controls and turn-based play. It was
+    designed as a turn-based game for an educational date night.
   made: Built by Claude agents in one day, November 2026.
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
   image_alt: A world map coloured by infection level, with a turn report and an End turn button
+
+- slug: unwalled-garden
+  name: The Unwalled Garden
+  kind: Book
+  date: 2026-10-19
+  url: /llm-fun/unwalled-garden/The-Unwalled-Garden.pdf
+  blurb: >-
+    I always wanted to write a book about the popular history of interdisciplinary research;
+    however, as a postdoc, I'm very much too busy, and this one falls under my 'need to intensely
+    verify' category. However, I experimented with Gemini Argon 4 and Fable 5.1 back-and-forth a
+    few times to put together a book on it (I also helped!); from what I have read so far, it
+    seemed like an amusing (albeit very boringly written/phrased – it's written in claudish!) book.
+  made: 'A 294-page manuscript draft (PDF): "How the Collision of Disciplines Shaped Modern Discovery".'
+  tags: [Popular history, Interdisciplinary research, Gemini, Claude]
+  image: /images/llm-fun/unwalled-garden.jpg
+  image_alt: The title page of The Unwalled Garden, a manuscript draft
 
 - slug: thornwick-vale
   name: Thornwick Vale
@@ -32,6 +49,12 @@
     A classic-style fantasy adventure that runs in one browser page. Pick one of seven
     classes, level from 1 to 40 across five zones with a party of AI companions, and clear
     five dungeons. Every character has written dialogue. Saves stay in your browser.
+  involvement: >-
+    Medium. I wrote an original design spec, but nothing too specific – motivated to make a
+    budget World of Warcraft. I did a bunch of playtesting, checked each part, and I have
+    finished the game from start to end (which was surprisingly fun!). The game went through
+    maybe 3-5 major versions, including a graphic overhaul, simulated encounter balancing, and
+    (the full version, not on the site) full (generated) voice acting and working multiplayer.
   made: About 45,000 lines of JavaScript, built by Claude agents over four days in October 2026.
   tags: [Fantasy RPG, Single page, Written dialogue, Claude]
   image: /images/llm-fun/thornwick-vale.jpg

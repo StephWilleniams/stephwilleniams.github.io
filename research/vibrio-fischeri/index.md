@@ -26,3 +26,4 @@ Before collecting data, it is worth asking which experiments could actually meas
 ## Outputs
 
 - Williams, S., Cheam, D., Nishiguchi, M. K., Sindi, S. S., Khatri, S., Rutter, E. M. Identifiability, sensitivity, and genetic algorithms in bacterial biofilm selection models. *Bull. Math. Biol.* 88, 132 (2026). [Paper](https://doi.org/10.1007/s11538-026-01693-5) · [Code](https://github.com/StephWilleniams/BiofilmModelAnalysis) · [Update]({{ '/updates/identifiability-sensitivity-and-genetic-algorithms-in-bacterial-biofilm-s/' | relative_url }})
+- [Interactive: one day of the biofilm selection model]({{ '/interactive/#biofilm-day' | relative_url }})

@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
   <meta name="description" content="{% if page.summary %}{{ page.summary | strip_html | strip_newlines }}{% else %}{{ site.description | strip_newlines }}{% endif %}">
+  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/favicon-32.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ '/assets/icons/icon-192.png' | relative_url }}">
+  <link rel="apple-touch-icon" href="{{ '/assets/icons/apple-touch-icon.png' | relative_url }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -19,8 +23,8 @@
       <a href="{{ '/research/' | relative_url }}"{% if page.url contains '/research/' %} aria-current="page"{% endif %}>Research</a>
       <a href="{{ '/updates/' | relative_url }}"{% if page.url contains '/updates/' %} aria-current="page"{% endif %}>Updates</a>
       <a href="{{ '/#publications' | relative_url }}">Publications</a>
-      <a href="{{ '/#interactive' | relative_url }}">Interactive</a>
-      <a href="{{ '/llm-fun/' | relative_url }}"{% if page.url contains '/llm-fun/' %} aria-current="page"{% endif %}>LLM-fun</a>
+      <a href="{{ '/interactive/' | relative_url }}"{% if page.url contains '/interactive/' %} aria-current="page"{% endif %}>Interactive</a>
+      <a href="{{ '/fun-stuff/' | relative_url }}"{% if page.url contains '/fun-stuff/' or page.url contains '/llm-fun/' %} aria-current="page"{% endif %}>Fun stuff</a>
       <a href="{{ '/files/Williams_CV.pdf' | relative_url }}">CV</a>
     </nav>
   </div>

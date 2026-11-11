@@ -19,5 +19,4 @@ With Kaden Muffett, I am training deep-learning object detectors on daily photog
 
 ## Outputs
 
-- Talk: [CassiopeaBase MATH-BIO 2026]({{ '/updates/cassiopeabase-math-bio-2026/' | relative_url }}), Key Largo, FL (June 2026).
 - In preparation: Williams, S., Muffett, K. M. Deep learning measures the timing of strobilation in *Cassiopea* from daily photographs.

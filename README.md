@@ -40,6 +40,7 @@ add a card image to `images/llm-fun/`, and add an entry to `_data/llm_fun.yml`. 
 - `updates/`: list of all updates; each post lives in `_posts/`
 - `_layouts/`: shared page templates (header, footer, post, organism page)
 - `assets/css/site.css`: styles
-- `sims/`: standalone interactive simulations
+- `sims/`: standalone interactive simulations, shown together on `interactive/`
+- `fun-stuff/`: the Fun stuff page and its Music page; it also links to `llm-fun/`
 - `llm-fun/`: side projects built with language models; the list comes from `_data/llm_fun.yml`
 - `redirects/`: forwards old URLs from the previous site to the new pages
