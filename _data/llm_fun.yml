@@ -22,7 +22,7 @@
   made: Built by Claude agents in one day, November 2026.
   tags: [Stochastic SIRD, Metapopulation model, Turn-based, Claude]
   image: /images/llm-fun/r-naught.jpg
-  image_alt: A world map coloured by infection level, with a turn report and an End turn button
+  image_alt: A world map colored by infection level, with a turn report and an End turn button
 
 - slug: unwalled-garden
   name: The Unwalled Garden

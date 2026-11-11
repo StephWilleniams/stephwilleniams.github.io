@@ -1,5 +1,5 @@
 ---
-title: Identifiability, Sensitivity, and Genetic Algorithms in Bacterial Biofilm Selection Models
+title: Identifiability, sensitivity, and genetic algorithms in bacterial biofilm selection models
 kind: Paper
 summary: Which experiments can actually measure a biofilm selection model's parameters? Optimized sampling beats more data.
 links:

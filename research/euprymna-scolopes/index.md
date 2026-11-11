@@ -34,11 +34,11 @@ Breathing strength, breathing rate and squid size dominate how long bacteria sta
 - Extending the model to a realistic, deforming mantle cavity.
 - Adding swimming and chemotaxis, since *V. fischeri* are not passive tracers. Does active swimming buffer recruitment against weakened breathing, up to a threshold temperature?
 
-Try a simplified version of the flow method in the [interactive Stokeslet demo]({{ '/#interactive' | relative_url }}).
+Try a simplified version of the flow method in the [interactive Stokeslet demo]({{ '/interactive/#stokeslets' | relative_url }}).
 
 ## Outputs
 
-- Williams, S., Ruiz, K. A., Heath-Heckman, E., Rutter, E. M., Khatri, S. Thermal stress disrupts symbiotic fluid dynamics in bobtail squid. *J. R. Soc. Interface* 23, 20251136 (2026). [Paper](https://doi.org/10.1098/rsif.2025.1136) · [Preprint](https://arxiv.org/abs/2511.00326) · [Code](https://github.com/StephWilleniams/SquidInternalFlows)
+- Williams, S., Ruiz, K. A., Heath-Heckman, E., Rutter, E. M., Khatri, S. Thermal stress disrupts symbiotic fluid dynamics in bobtail squid. *J. R. Soc. Interface* 23(240), 20251136 (2026). [Paper](https://doi.org/10.1098/rsif.2025.1136) · [Preprint](https://arxiv.org/abs/2511.00326) · [Code](https://github.com/StephWilleniams/SquidInternalFlows)
 - [Poster: MDDLS 2025]({{ '/updates/mddls-2025/' | relative_url }}) · [Invited talk: AMS Western Sectional 2026]({{ '/updates/ams-western-sectional/' | relative_url }}) · [Talk: CassiopeaBase MATH-BIO 2026]({{ '/updates/cassiopeabase-math-bio-2026/' | relative_url }})
 - [Field work: Oʻahu, January 2026]({{ '/updates/hawaii-field-work/' | relative_url }})
 - Ongoing: Exploring the impacts of squid breathing dynamics on bacterial symbiont acquisition.
@@ -48,5 +48,5 @@ Try a simplified version of the flow method in the [interactive Stokeslet demo](
 
 <ol class="refs">
   <li>Nawroth, J. C. et al. Motile cilia create fluid-mechanical microhabitats for the active recruitment of the host microbiome. <em>PNAS</em> 114, 9510–9516 (2017). <a href="https://doi.org/10.1073/pnas.1706926114">doi:10.1073/pnas.1706926114</a></li>
-  <li>Otjacques, E. et al. <em>Global Change Biology</em> (2025). <a href="https://doi.org/10.1111/gcb.70243">doi:10.1111/gcb.70243</a></li>
+  <li>Otjacques, E. et al. Climate-driven warming disrupts the symbiosis of bobtail squid <em>Euprymna scolopes</em> and the luminous bacterium <em>Vibrio fischeri</em>. <em>Global Change Biology</em> 31(5), e70243 (2025). <a href="https://doi.org/10.1111/gcb.70243">doi:10.1111/gcb.70243</a></li>
 </ol>

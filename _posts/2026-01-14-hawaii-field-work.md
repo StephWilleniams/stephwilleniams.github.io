@@ -45,7 +45,7 @@ Not everything on the bench was a squid.
 
 <div class="fig-row three crop-34">
 <figure>
-  <img src="{{ '/images/updates/hawaii-2026/shrimp-jail.jpg' | relative_url }}" alt="A grey shaker bottle of seawater on a lab bench with 'Shrimp Jail' written on it in blue marker" loading="lazy">
+  <img src="{{ '/images/updates/hawaii-2026/shrimp-jail.jpg' | relative_url }}" alt="A gray shaker bottle of seawater on a lab bench with 'Shrimp Jail' written on it in blue marker" loading="lazy">
   <figcaption>Field equipment: the Shrimp Jail.</figcaption>
 </figure>
 <figure>
@@ -94,11 +94,11 @@ Night collecting leaves the days for the rest of the island.
   <figcaption>A Hawaiian plate at Highway Inn in Kakaʻako: laulau, kālua pig, poi and lomi salmon.</figcaption>
 </figure>
 <figure>
-  <img src="{{ '/images/updates/hawaii-2026/plate-lunch.jpg' | relative_url }}" alt="A takeaway box of fried chicken, fried tofu and white rice" loading="lazy">
+  <img src="{{ '/images/updates/hawaii-2026/plate-lunch.jpg' | relative_url }}" alt="A takeout box of fried chicken, fried tofu and white rice" loading="lazy">
   <figcaption>Plate lunch: fried chicken, tofu and rice.</figcaption>
 </figure>
 <figure>
-  <img src="{{ '/images/updates/hawaii-2026/poke.jpg' | relative_url }}" alt="A takeaway box with two kinds of cubed raw fish poke either side of a mound of white rice" loading="lazy">
+  <img src="{{ '/images/updates/hawaii-2026/poke.jpg' | relative_url }}" alt="A takeout box with two kinds of cubed raw fish poke either side of a mound of white rice" loading="lazy">
   <figcaption>Poke and rice.</figcaption>
 </figure>
 </div>

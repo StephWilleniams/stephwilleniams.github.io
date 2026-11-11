@@ -1,5 +1,5 @@
 ---
-title: Low-abundance taxa drive host microbiome response to temperature stress
+title: "Exaiptasia diaphana core microbiome members are lost under climate change conditions despite host thermal tolerance"
 kind: Paper
 summary: In heat-stressed sea anemones, a small set of rare bacteria shifts before the host does, making them early-warning indicators.
 links:
@@ -11,9 +11,9 @@ links:
     url: /research/exaiptasia-diaphana/
 ---
 
-**Update (October 2026):** now published in *Nature Communications*, under the title "*Exaiptasia diaphana* core microbiome members are lost under climate change conditions despite host thermal tolerance".
+Now published in *Nature Communications* (October 2026). The preprint was posted in September 2025 under the title "Low-abundance taxa drive host microbiome response to temperature stress".
 
-A new paper, led by my collaborator Kaden Muffett with the Sogin lab, on thermal stress in the sea anemone *Exaiptasia diaphana*, the laboratory model for coral bleaching.
+The paper was led by my collaborator Kaden Muffett with the Sogin lab, on thermal stress in the sea anemone *Exaiptasia diaphana*, the laboratory model for coral bleaching.
 
 The key finding: a small set of conserved, low-abundance bacteria declines *before* the anemones themselves do. Since *Exaiptasia* is already used as an indicator of how corals will fare, these bacteria are, in effect, indicators of the indicator species.
 

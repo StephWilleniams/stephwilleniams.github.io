@@ -1,5 +1,5 @@
 ---
-title: Thermal Stress Disrupts Symbiotic Fluid Dynamics in Bobtail Squid
+title: Thermal stress disrupts symbiotic fluid dynamics in bobtail squid
 kind: Paper
 summary: A fluid-dynamics model of the squid's mantle cavity shows that heat stress can cut young squid's ability to capture the bacteria they depend on.
 links:
