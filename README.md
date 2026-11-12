@@ -39,6 +39,9 @@ add a card image to `images/llm-fun/`, and add an entry to `_data/llm_fun.yml`. 
 - `research/`: research overview and one page per study system
 - `updates/`: list of all updates; each post lives in `_posts/`
 - `_layouts/`: shared page templates (header, footer, post, organism page)
+- `_data/`: the lists behind the research cards (`organisms.yml`) and the LLM-fun cards (`llm_fun.yml`)
+- `images/`: photos and figures (`research/`, `updates/<post>/`, `fun-stuff/`, `llm-fun/`)
+- `files/`: PDFs and other downloads, served at `/files/<name>`
 - `assets/css/site.css`: styles
 - `sims/`: standalone interactive simulations, shown together on `interactive/`
 - `fun-stuff/`: the Fun stuff page and its Music page; it also links to `llm-fun/`

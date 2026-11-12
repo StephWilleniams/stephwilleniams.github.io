@@ -28,7 +28,7 @@ Between talks there was time on the water, by boat and snorkeling along the mang
   <figcaption>Snorkeling along the mangroves.</figcaption>
 </figure>
 <figure>
-  <img src="{{ '/images/updates/cassiopeabase-2026/rainbow.jpg' | relative_url }}" alt="A rainbow under grey cloud over calm water, with palm trees, a small beach and a dock with a boat on a lift" loading="lazy">
+  <img src="{{ '/images/updates/cassiopeabase-2026/rainbow.jpg' | relative_url }}" alt="A rainbow under gray cloud over calm water, with palm trees, a small beach and a dock with a boat on a lift" loading="lazy">
   <figcaption>A rainbow over the dock.</figcaption>
 </figure>
 </div>

@@ -1,5 +1,5 @@
 # One entry per study system. Used by the research overview page and the homepage tiles.
-# To add a system: add an entry here and a page at research/<slug>/index.html.
+# To add a system: add an entry here and a page at research/<slug>/index.md.
 # image: a path in this repo (e.g. /images/research/x.png) or a full URL. If it fails to load,
 # the card shows the organism name instead.
 
@@ -36,7 +36,7 @@
   common: Sea anemone, a model for coral bleaching
   theme: How stressed host populations persist
   blurb: >-
-    Exaiptasia hosts the same algae as reef-building corals and bleaches the same way. I build population
+    <em>Exaiptasia</em> hosts the same algae as reef-building corals and bleaches the same way. I build population
     models of how heat stress, and the anemone's microbiome, shape its growth and reproduction.
   methods: [Delay differential equations, Size-structured models, Generalized additive models, Identifiability]
   image: /images/research/exaiptasia.jpg
@@ -52,7 +52,7 @@
   label: New
   blurb: >-
     Another animal that lives with photosynthetic algae. With Kaden Muffett, I am using deep learning on
-    daily photographs to measure when Cassiopea polyps transform into juvenile jellyfish.
+    daily photographs to measure when <em>Cassiopea</em> polyps transform into juvenile jellyfish.
   methods: [Deep-learning object detection, Image analysis, Time-series data]
   image: https://commons.wikimedia.org/wiki/Special:FilePath/Cassiopea_jellyfish.jpg?width=900
   image_alt: An upside-down jellyfish

@@ -10,6 +10,10 @@ timezone: America/Los_Angeles
 # Each file in _posts/ becomes a page at /updates/<slug>/
 permalink: /updates/:title/
 
+# Builds /sitemap.xml (on the GitHub Pages plugin whitelist)
+plugins:
+  - jekyll-sitemap
+
 markdown: kramdown
 kramdown:
   input: GFM
