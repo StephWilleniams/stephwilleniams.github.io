@@ -41,7 +41,14 @@
     }
     button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
     button.on { border-color: var(--accent); background: #E8F0F8; color: var(--accent); }
-    .presets button { min-height: 36px; padding: 0 10px; font-size: 14px; }
+    .presets { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; align-items: center; }
+    .presets .wide { grid-column: 1 / -1; }
+    .presets button { min-height: 44px; padding: 4px 8px; font-size: 14px; line-height: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .presets button small { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+    .presets button.on small { color: var(--accent); }
+    .presets .ph { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.3; }
+    .presets .rl { text-align: right; padding-right: 4px; }
+    a:not([href]) { color: inherit; font-style: italic; }
     .stats { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; color: var(--ink-2); }
     .stats .v { text-align: right; color: var(--ink); }
     a { color: var(--accent); }
@@ -73,13 +80,17 @@
       <p class="hint">Swimmers (modelled on the alga <em>Chlamydomonas</em>) and passive particles share a narrow channel. Near a wall, each swimmer can be <em>kicked</em>: a randomly timed turn that steers it away from the wall. How often and how hard those kicks are decides where the passive particles end up.</p>
 
       <div class="field">
-        <div class="presets row" id="presets">
-          <button type="button" data-k="0" data-t="13.5" title="No kicks">No kicks</button>
-          <button type="button" data-k="0.05" data-t="0.05" title="Low rate, low strength">LRLS</button>
-          <button type="button" data-k="0.05" data-t="13.5" title="Low rate, high strength">LRHS</button>
-          <button type="button" data-k="45" data-t="0.05" title="High rate, low strength">HRLS</button>
-          <button type="button" data-k="45" data-t="13.5" title="High rate, high strength">HRHS</button>
+        <div class="presets" id="presets">
+          <button type="button" class="wide" data-k="0" data-t="13.5">No kicks</button>
+          <span></span><span class="ph">Rare kicks<br><i>k</i> = 0.05 s⁻¹</span><span class="ph">Frequent kicks<br><i>k</i> = 45 s⁻¹</span>
+          <span class="ph rl">Gentle<br><i>τ</i> = 0.05</span>
+          <button type="button" data-k="0.05" data-t="0.05">Rare, gentle<small>LRLS</small></button>
+          <button type="button" data-k="45" data-t="0.05">Frequent, gentle<small>HRLS</small></button>
+          <span class="ph rl">Hard<br><i>τ</i> = 13.5</span>
+          <button type="button" data-k="0.05" data-t="13.5">Rare, hard<small>LRHS</small></button>
+          <button type="button" data-k="45" data-t="13.5">Frequent, hard<small>HRHS</small></button>
         </div>
+        <p class="hint" id="presetNote"></p>
       </div>
 
       <div class="field">
@@ -107,9 +118,11 @@
 
       <div class="readout">
         <span class="big mono" id="eVal">–</span>
-        <span class="hint">passive enrichment at the walls, <i>E</i><sup>p</sup> (1 = uniform)</span>
+        <span class="hint">passive enrichment at the walls, <i>E</i><sup>p</sup>, averaged since the last change (1 = uniform)</span>
       </div>
-      <div class="canvas-box" style="aspect-ratio:4.5"><canvas id="cvSpark" aria-label="Passive enrichment over time"></canvas></div>
+      <div class="hint">Paper's value: <b class="mono" id="eRef">–</b> <span id="eRefHow"></span></div>
+      <div class="canvas-box" style="aspect-ratio:3.6"><canvas id="cvSpark" aria-label="Passive enrichment over time"></canvas></div>
+      <div class="legend"><span><i class="dot" style="background:var(--passive)"></i>running average</span><span><i class="dot" style="background:var(--passive);opacity:.45"></i>each 20 s</span><span>– – paper's long-run value</span></div>
 
       <div class="stats">
         <span>Simulated time</span><span class="v mono" id="stT">0 s</span>
@@ -118,14 +131,14 @@
         <span>Kicks per swimmer per second</span><span class="v mono" id="stRate">–</span>
       </div>
 
-      <p class="hint">Swimmers settle within seconds; the passive particles take thousands of simulated seconds, so switch to <b>Max</b> and give it a minute. Compare <b>No kicks</b> with <b>HRHS</b>.</p>
+      <p class="hint">Swimmers settle within seconds; the passive particles take thousands of simulated seconds, so switch to <b>Max</b> and give it a minute. Compare <b>No kicks</b> with <b>Frequent, hard</b>, and watch the running average settle onto the paper's value.</p>
 
       <div class="eq">
         This is the model from our paper
-        <!-- TODO: add the arXiv DOI link to href once the preprint is posted -->
-        <a id="paperLink" href="" target="_top">Near-boundary active kicks control passive distributions in confined active–passive suspensions</a>,
+        <!-- TODO: once the preprint is posted, add href="https://doi.org/..." to #paperLink and delete "(preprint coming soon)" -->
+        <a id="paperLink" target="_top">Near-boundary active kicks control passive distributions in confined active–passive suspensions</a> (preprint coming soon),
         run in full: 25 three-disc swimmers and 80 Brownian passive particles in a 2000 × 6 periodic channel, WCA contacts, anisotropic drag and the same time step (<i>dt</i> = 6.25×10<sup>−4</sup> s) as the paper. Lengths are in swimmer half-lengths (≈10 µm).
-        <i>E</i><sup>p</sup> here is a plain histogram estimate of the near-wall fraction, not the paper's smoothed estimator.
+        <i>E</i><sup>p</sup> uses the paper's wall window (|<i>y</i>| ≥ 1.569, uniform value 0.357), counted from a plain histogram rather than the paper's smoothed estimate.
       </div>
     </div>
   </div>
@@ -444,18 +457,18 @@ function makeSim(opts) {
     function engine(self, BUDGET) {
       var sim = null, mode = 0, paused = false, k = 45, tau = 13.5;
       var NB = 120, hs, hp, nFramesH = 0;
-      var epSeries = [], epAcc = 0, epN = 0, epBlockStart = 0, wallAcc = 0, wallN = 0;
+      var epSeries = [], cumSeries = [], epAcc = 0, epN = 0, epBlockStart = 0, wallAcc = 0, wallN = 0;
       var cut = 0, phiU = 0;
       var kicksAtMark = 0, tMark = 0, rateNow = NaN;
       var clockSim = 0, clockWall = 0, lastPost = 0, measT = 0, measSim = 0, speedNow = 0, tChange = 0;
       function clearStats() {
         hs = new Float64Array(NB); hp = new Float64Array(NB); nFramesH = 0;
-        epSeries = []; epAcc = 0; epN = 0; wallAcc = 0; wallN = 0;
+        epSeries = []; cumSeries = []; epAcc = 0; epN = 0; wallAcc = 0; wallN = 0;
         epBlockStart = sim ? sim.stats.t : 0; tChange = epBlockStart;
       }
       function init(seed) {
         sim = makeSim({ seed: seed, kick_rate: k, kick_torque: tau });
-        cut = 2.5 - (0.5 + sim.consts.RB); phiU = (2.5 - cut) / 2.5;
+        var yAcc = 3.0 - 1.122462048309373 * 0.5, lw = 0.5 + sim.consts.RB; cut = yAcc - lw; phiU = lw / yAcc;
         clearStats(); kicksAtMark = 0; tMark = 0; rateNow = NaN;
         clockSim = 0; clockWall = performance.now(); measT = clockWall; measSim = 0;
       }
@@ -467,8 +480,8 @@ function makeSim(opts) {
         nFramesH++;
         wallAcc += w; wallN += sim.NP; epAcc += w; epN += sim.NP;
         if (sim.stats.t - epBlockStart >= 20) {          // one point per 20 simulated seconds
-          epSeries.push(epAcc / epN / phiU); epAcc = 0; epN = 0; epBlockStart = sim.stats.t;
-          if (epSeries.length > 2000) epSeries.splice(0, epSeries.length - 2000);
+          epSeries.push(epAcc / epN / phiU); cumSeries.push(wallAcc / wallN / phiU); epAcc = 0; epN = 0; epBlockStart = sim.stats.t;
+          if (epSeries.length > 2000) { epSeries.splice(0, epSeries.length - 2000); cumSeries.splice(0, cumSeries.length - 2000); }
         }
         if (sim.stats.t - tMark >= 5) {
           rateNow = (sim.stats.kickOnsets - kicksAtMark) / (sim.NS * (sim.stats.t - tMark));
@@ -491,7 +504,7 @@ function makeSim(opts) {
         self.postMessage({
           t: sim.stats.t, sx: sim.sx.slice(), sy: sim.sy.slice(), th: sim.th.slice(), scat: sim.scat.slice(),
           px: sim.px.slice(), py: sim.py.slice(), hs: hs.slice(), hp: hp.slice(), nFramesH: nFramesH,
-          ep: wallN ? wallAcc / wallN / phiU : NaN, epSeries: epSeries.slice(), nScat: nScat, rate: rateNow,
+          ep: wallN ? wallAcc / wallN / phiU : NaN, epSeries: epSeries.slice(), cumSeries: cumSeries.slice(), nScat: nScat, rate: rateNow,
           speed: speedNow, since: sim.stats.t - tChange, paused: paused, RAD: sim.RAD, OFF: sim.OFF
         });
       }
@@ -520,6 +533,31 @@ function makeSim(opts) {
       };
     }
     var WORKER_SRC = makeSim.toString() + '\n' + engine.toString() + '\nengine(self, 25);';
+
+
+    // Paper's measured passive enrichment E^p. Corners and k = 0: 80,000 s runs.
+    // Elsewhere: local-linear fit to the 3,745-run Sobol sweep (Fig. 3b), anchored on those runs,
+    // on a 25 x 25 grid uniform in log k (0.05-45) and log tau (0.05-13.5).
+    var EREF = { k0: 1.190, grid: [[1.205, 1.218, 1.229, 1.238, 1.245, 1.247, 1.245, 1.235, 1.22, 1.204, 1.169, 1.152, 1.155, 1.166, 1.182, 1.207, 1.227, 1.24, 1.246, 1.254, 1.263, 1.272, 1.281, 1.288, 1.297], [1.211, 1.226, 1.24, 1.253, 1.264, 1.273, 1.276, 1.275, 1.265, 1.246, 1.2, 1.208, 1.216, 1.223, 1.236, 1.254, 1.277, 1.285, 1.293, 1.302, 1.31, 1.319, 1.327, 1.335, 1.344], [1.216, 1.232, 1.249, 1.266, 1.281, 1.294, 1.303, 1.307, 1.303, 1.276, 1.249, 1.264, 1.276, 1.283, 1.293, 1.303, 1.322, 1.333, 1.343, 1.351, 1.359, 1.365, 1.374, 1.381, 1.393], [1.218, 1.236, 1.255, 1.275, 1.294, 1.311, 1.326, 1.335, 1.329, 1.279, 1.299, 1.32, 1.336, 1.346, 1.353, 1.361, 1.372, 1.383, 1.393, 1.401, 1.41, 1.417, 1.42, 1.427, 1.446], [1.217, 1.238, 1.259, 1.282, 1.305, 1.325, 1.345, 1.354, 1.327, 1.316, 1.35, 1.375, 1.394, 1.411, 1.418, 1.422, 1.433, 1.441, 1.444, 1.445, 1.466, 1.474, 1.474, 1.477, 1.486], [1.214, 1.237, 1.261, 1.285, 1.312, 1.336, 1.355, 1.354, 1.311, 1.358, 1.399, 1.429, 1.45, 1.472, 1.486, 1.497, 1.504, 1.51, 1.515, 1.525, 1.542, 1.55, 1.546, 1.543, 1.549], [1.207, 1.234, 1.261, 1.287, 1.315, 1.341, 1.342, 1.302, 1.343, 1.395, 1.445, 1.477, 1.5, 1.532, 1.559, 1.58, 1.591, 1.595, 1.598, 1.613, 1.628, 1.637, 1.631, 1.632, 1.633], [1.198, 1.228, 1.258, 1.287, 1.315, 1.327, 1.292, 1.33, 1.374, 1.428, 1.481, 1.521, 1.556, 1.601, 1.636, 1.663, 1.681, 1.69, 1.701, 1.714, 1.726, 1.727, 1.729, 1.731, 1.726], [1.186, 1.218, 1.251, 1.283, 1.304, 1.287, 1.326, 1.369, 1.413, 1.463, 1.521, 1.585, 1.63, 1.677, 1.717, 1.747, 1.769, 1.79, 1.807, 1.819, 1.829, 1.828, 1.831, 1.837, 1.834], [1.174, 1.209, 1.244, 1.272, 1.289, 1.329, 1.374, 1.414, 1.453, 1.506, 1.568, 1.645, 1.7, 1.749, 1.793, 1.83, 1.861, 1.891, 1.909, 1.921, 1.936, 1.947, 1.952, 1.952, 1.954], [1.168, 1.204, 1.24, 1.273, 1.31, 1.349, 1.39, 1.431, 1.481, 1.548, 1.612, 1.686, 1.764, 1.821, 1.87, 1.916, 1.956, 1.988, 2.011, 2.022, 2.04, 2.05, 2.052, 2.071, 2.076], [1.177, 1.21, 1.242, 1.276, 1.314, 1.354, 1.396, 1.438, 1.496, 1.568, 1.633, 1.704, 1.795, 1.878, 1.94, 1.993, 2.048, 2.083, 2.113, 2.132, 2.151, 2.154, 2.165, 2.183, 2.183], [1.18, 1.208, 1.239, 1.275, 1.314, 1.356, 1.398, 1.44, 1.504, 1.581, 1.657, 1.747, 1.837, 1.936, 2.011, 2.071, 2.132, 2.173, 2.207, 2.226, 2.247, 2.257, 2.273, 2.277, 2.286], [1.177, 1.204, 1.234, 1.269, 1.309, 1.353, 1.395, 1.44, 1.503, 1.587, 1.679, 1.771, 1.863, 1.963, 2.061, 2.136, 2.199, 2.25, 2.283, 2.303, 2.335, 2.362, 2.364, 2.376, 2.374], [1.174, 1.197, 1.225, 1.258, 1.298, 1.342, 1.387, 1.429, 1.478, 1.572, 1.669, 1.764, 1.863, 1.977, 2.088, 2.172, 2.246, 2.31, 2.35, 2.383, 2.412, 2.423, 2.445, 2.458, 2.466], [1.17, 1.19, 1.214, 1.245, 1.284, 1.329, 1.377, 1.41, 1.457, 1.552, 1.648, 1.745, 1.85, 1.975, 2.086, 2.192, 2.285, 2.356, 2.399, 2.439, 2.471, 2.486, 2.5, 2.526, 2.529], [1.171, 1.183, 1.204, 1.232, 1.269, 1.31, 1.354, 1.387, 1.442, 1.532, 1.623, 1.715, 1.827, 1.959, 2.084, 2.196, 2.3, 2.374, 2.433, 2.48, 2.518, 2.551, 2.562, 2.575, 2.588], [1.171, 1.18, 1.193, 1.215, 1.243, 1.282, 1.328, 1.372, 1.424, 1.499, 1.582, 1.674, 1.788, 1.922, 2.067, 2.185, 2.299, 2.383, 2.455, 2.508, 2.545, 2.573, 2.602, 2.621, 2.647], [1.169, 1.177, 1.185, 1.199, 1.218, 1.248, 1.29, 1.329, 1.378, 1.441, 1.523, 1.619, 1.736, 1.87, 2.019, 2.175, 2.292, 2.386, 2.473, 2.529, 2.57, 2.604, 2.629, 2.644, 2.66], [1.165, 1.173, 1.18, 1.186, 1.197, 1.217, 1.248, 1.29, 1.336, 1.392, 1.464, 1.56, 1.684, 1.829, 1.987, 2.149, 2.295, 2.409, 2.483, 2.539, 2.588, 2.614, 2.639, 2.666, 2.687], [1.16, 1.167, 1.173, 1.175, 1.181, 1.193, 1.215, 1.25, 1.294, 1.342, 1.415, 1.513, 1.645, 1.793, 1.957, 2.135, 2.295, 2.41, 2.493, 2.554, 2.597, 2.63, 2.648, 2.674, 2.697], [1.154, 1.158, 1.163, 1.168, 1.168, 1.178, 1.201, 1.222, 1.253, 1.301, 1.377, 1.474, 1.6, 1.763, 1.961, 2.141, 2.301, 2.42, 2.505, 2.573, 2.612, 2.642, 2.668, 2.683, 2.693], [1.145, 1.149, 1.153, 1.158, 1.157, 1.165, 1.182, 1.195, 1.213, 1.266, 1.348, 1.442, 1.583, 1.768, 1.984, 2.168, 2.327, 2.444, 2.534, 2.586, 2.629, 2.652, 2.67, 2.692, 2.708], [1.137, 1.14, 1.144, 1.147, 1.146, 1.147, 1.16, 1.175, 1.189, 1.247, 1.339, 1.455, 1.624, 1.832, 2.051, 2.222, 2.364, 2.467, 2.536, 2.578, 2.607, 2.63, 2.654, 2.671, 2.685], [1.129, 1.131, 1.133, 1.133, 1.131, 1.126, 1.138, 1.156, 1.193, 1.251, 1.36, 1.512, 1.735, 1.98, 2.194, 2.367, 2.477, 2.517, 2.535, 2.556, 2.53, 2.588, 2.605, 2.63, 2.637]], n: 25 };
+    var CORNER = { '0.05,0.05': 1.215, '0.05,13.5': 1.130, '45,0.05': 1.294, '45,13.5': 2.632 };
+    function refE(k, tau) {
+      if (k <= 0) return { v: EREF.k0, how: 'measured' };
+      var c = CORNER[(+k.toPrecision(3)) + ',' + (+tau.toPrecision(3))];
+      if (c !== undefined) return { v: c, how: 'measured' };
+      var n = EREF.n, g = EREF.grid;
+      var a = Math.log(k / 0.05) / Math.log(45 / 0.05) * (n - 1), b = Math.log(tau / 0.05) / Math.log(13.5 / 0.05) * (n - 1);
+      a = Math.max(0, Math.min(n - 1, a)); b = Math.max(0, Math.min(n - 1, b));
+      var i = Math.min(n - 2, Math.floor(a)), j = Math.min(n - 2, Math.floor(b)), fa = a - i, fb = b - j;
+      var v = (1 - fb) * ((1 - fa) * g[j][i] + fa * g[j][i + 1]) + fb * ((1 - fa) * g[j + 1][i] + fa * g[j + 1][i + 1]);
+      return { v: v, how: 'from sweep' };
+    }
+    var NOTES = {
+      '0': 'Swimmers slide along the walls until their own wobble turns them away. Passive particles end up only slightly enriched at the walls.',
+      '0.05,0.05': 'Kicks come about once every 20 s near a wall and barely turn the swimmer: almost the same as no kicks.',
+      '0.05,13.5': 'Kicks are rare, but each one turns the swimmer sharply off the wall. Overall, still close to no kicks.',
+      '45,0.05': 'Swimmers are nudged many times a second, but each nudge is tiny, so they still hug the walls. Passive particles shift only a little.',
+      '45,13.5': 'Swimmers are turned hard almost as soon as they reach a wall, so they leave the walls quickly. Passive particles pile up at the walls instead.'
+    };
 
     // ---------------- UI state ----------------
     var state = { k: 45, tau: 13.5, mode: 1, paused: false, follow: 0, camX: null, snap: null };
@@ -566,6 +604,12 @@ function makeSim(opts) {
       var sp = document.querySelectorAll('#speeds button');
       for (i = 0; i < sp.length; i++) sp[i].classList.toggle('on', +sp[i].dataset.s === state.mode);
       document.getElementById('btnPlay').textContent = state.paused ? 'Play' : 'Pause';
+      var key = state.k === 0 ? '0' : (+state.k.toPrecision(3)) + ',' + (+state.tau.toPrecision(3));
+      var r = refE(state.k, state.tau);
+      document.getElementById('presetNote').textContent = (NOTES[key] ? NOTES[key] + ' ' : 'Somewhere between the corners. ') +
+        'In the paper, E\u1D56 = ' + r.v.toFixed(2) + (r.how === 'measured' ? ' here.' : ' here (estimated from the parameter sweep).');
+      document.getElementById('eRef').textContent = r.v.toFixed(2);
+      document.getElementById('eRefHow').textContent = r.how === 'measured' ? 'measured over 80,000 s' : 'estimated from the parameter sweep';
     }
     function sendParams() { send({ type: 'params', k: state.k, tau: state.tau }); syncControls(); }
 
@@ -760,19 +804,28 @@ function makeSim(opts) {
     function drawSpark(sn) {
       var f = fitCanvas(cvS), ctx = f.ctx, w = f.w, h = f.h;
       ctx.clearRect(0, 0, w, h);
-      var d = sn.epSeries, m = 6;
-      var lo = 0, hi = 3;
-      for (var i = 0; i < d.length; i++) hi = Math.max(hi, d[i] * 1.1);
+      var d = sn.epSeries, cm = sn.cumSeries || [], m = 8, i;
+      var ref = refE(state.k, state.tau).v;
+      var lo = 0.5, hi = Math.max(3, ref * 1.1);
+      for (i = 0; i < d.length; i++) hi = Math.max(hi, d[i] * 1.05);
       var Y = function (v) { return m + (1 - (v - lo) / (hi - lo)) * (h - 2 * m); };
-      ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
-      ctx.beginPath(); ctx.moveTo(0, Y(1)); ctx.lineTo(w, Y(1)); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = C.muted; ctx.font = '11px "IBM Plex Mono", monospace'; ctx.textBaseline = 'bottom'; ctx.textAlign = 'right';
-      ctx.fillText('E = 1', w - 4, Y(1) - 2);
-      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-      ctx.fillText(d.length ? 'last ' + Math.round(d.length * 20).toLocaleString() + ' s' : 'collecting…', 4, 2);
+      ctx.font = '11px "IBM Plex Mono", monospace';
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.setLineDash([2, 4]);
+      ctx.beginPath(); ctx.moveTo(0, Y(1)); ctx.lineTo(w, Y(1)); ctx.stroke();
+      ctx.fillStyle = C.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+      ctx.fillText('uniform', w - 4, Y(1) + 2);
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.2; ctx.setLineDash([6, 4]);
+      ctx.beginPath(); ctx.moveTo(0, Y(ref)); ctx.lineTo(w, Y(ref)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = C.ink; ctx.textBaseline = 'bottom';
+      ctx.fillText('paper ' + ref.toFixed(2), w - 4, Y(ref) - 2);
+      ctx.fillStyle = C.muted; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText(d.length ? Math.round(d.length * 20).toLocaleString() + ' s' : 'collecting…', 4, 2);
       if (d.length < 2) return;
-      ctx.strokeStyle = C.passive; ctx.lineWidth = 1.8; ctx.beginPath();
+      ctx.strokeStyle = C.passive; ctx.globalAlpha = 0.45; ctx.lineWidth = 1.2; ctx.beginPath();
       for (i = 0; i < d.length; i++) { var x = i / (d.length - 1) * w; if (i === 0) ctx.moveTo(x, Y(d[i])); else ctx.lineTo(x, Y(d[i])); }
+      ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = C.passive; ctx.lineWidth = 2.2; ctx.beginPath();
+      for (i = 0; i < cm.length; i++) { var x2 = i / (cm.length - 1) * w; if (i === 0) ctx.moveTo(x2, Y(cm[i])); else ctx.lineTo(x2, Y(cm[i])); }
       ctx.stroke();
     }
 
