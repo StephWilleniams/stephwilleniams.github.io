@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Near-boundary active kicks · Stephen Williams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #16202A; --ink-2: #3D4955; --muted: #5B6672;
+      --line: #E3E7EC; --line-2: #C9D1DA; --panel: #F8FAFB; --accent: #0B4F8A;
+      --active: #1F5FA8; --passive: #D9661F; --kick: #1E9E6A; --wall: #8A96A3; --band: #EEF3F8;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--panel); color: var(--ink); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 15px; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .app { display: flex; flex-wrap: wrap; gap: 24px; padding: 20px; }
+    .stage { flex: 2 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+    .controls { flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+    .panel-title { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; color: var(--ink-2); }
+    .panel-title b { font-weight: 500; color: var(--ink); }
+    .canvas-box { position: relative; width: 100%; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    .canvas-box.zoom { aspect-ratio: 4; }
+    .canvas-box.overview { aspect-ratio: 2.05; }
+    .canvas-box.hist { aspect-ratio: 2.4; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: manipulation; }
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .hint { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.5; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { display: flex; justify-content: space-between; gap: 8px; }
+    input[type=range] { width: 100%; height: 28px; accent-color: var(--accent); }
+    input:disabled { opacity: 0.45; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    button {
+      min-height: 40px; padding: 0 14px; font: inherit; color: var(--ink);
+      background: #fff; border: 1px solid var(--line-2); border-radius: 8px; cursor: pointer;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    button.on { border-color: var(--accent); background: #E8F0F8; color: var(--accent); }
+    .presets button { min-height: 36px; padding: 0 10px; font-size: 14px; }
+    .stats { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; color: var(--ink-2); }
+    .stats .v { text-align: right; color: var(--ink); }
+    a { color: var(--accent); }
+    .eq { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .big { font-size: 26px; font-weight: 500; color: var(--ink); line-height: 1.1; }
+    .readout { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="stage">
+      <div class="panel-title"><span><b>Close-up</b> · following one swimmer</span><span class="mono" id="zoomLabel"></span></div>
+      <div class="canvas-box zoom"><canvas id="cvZoom" aria-label="Close-up of the channel following one swimmer"></canvas></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--active)"></i>Swimmer</span>
+        <span><i class="dot" style="background:var(--kick)"></i>Swimmer mid-kick</span>
+        <span><i class="dot" style="background:var(--passive)"></i>Passive particle</span>
+        <span><i class="dot" style="background:var(--band);border:1px solid var(--line-2)"></i>Kick band (within ℓ<sub>b</sub> of a wall)</span>
+      </div>
+
+      <div class="panel-title"><span><b>The whole channel</b> · cut into 10 strips, read like lines of text</span><span class="mono">2000 × 6</span></div>
+      <div class="canvas-box overview"><canvas id="cvOverview" aria-label="The whole periodic channel, wrapped into strips"></canvas></div>
+
+      <div class="panel-title"><span><b>Where particles sit across the channel</b> · averaged since the last change</span><span class="mono" id="histLabel"></span></div>
+      <div class="canvas-box hist"><canvas id="cvHist" aria-label="Distributions of swimmers and passive particles across the channel"></canvas></div>
+    </div>
+
+    <div class="controls">
+      <p class="hint">Swimmers (modelled on the alga <em>Chlamydomonas</em>) and passive particles share a narrow channel. Near a wall, each swimmer can be <em>kicked</em>: a randomly timed turn that steers it away from the wall. How often and how hard those kicks are decides where the passive particles end up.</p>
+
+      <div class="field">
+        <div class="presets row" id="presets">
+          <button type="button" data-k="0" data-t="13.5" title="No kicks">No kicks</button>
+          <button type="button" data-k="0.05" data-t="0.05" title="Low rate, low strength">LRLS</button>
+          <button type="button" data-k="0.05" data-t="13.5" title="Low rate, high strength">LRHS</button>
+          <button type="button" data-k="45" data-t="0.05" title="High rate, low strength">HRLS</button>
+          <button type="button" data-k="45" data-t="13.5" title="High rate, high strength">HRHS</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="kRate"><span>Kick rate, <i>k</i></span><span class="mono" id="kVal"></span></label>
+        <input type="range" id="kRate" min="0" max="1000" step="1">
+      </div>
+      <div class="field">
+        <label for="kTau"><span>Kick strength, <i>τ</i></span><span class="mono" id="tVal"></span></label>
+        <input type="range" id="kTau" min="0" max="1000" step="1">
+      </div>
+
+      <div class="field">
+        <span style="font-size:14px;color:var(--ink-2)">Speed</span>
+        <div class="row" id="speeds">
+          <button type="button" data-s="1">Real time</button>
+          <button type="button" data-s="10">10×</button>
+          <button type="button" data-s="0">Max</button>
+        </div>
+      </div>
+      <div class="row">
+        <button type="button" id="btnPlay">Pause</button>
+        <button type="button" id="btnNext">Follow another swimmer</button>
+        <button type="button" id="btnReset">Restart</button>
+      </div>
+
+      <div class="readout">
+        <span class="big mono" id="eVal">–</span>
+        <span class="hint">passive enrichment at the walls, <i>E</i><sup>p</sup> (1 = uniform)</span>
+      </div>
+      <div class="canvas-box" style="aspect-ratio:4.5"><canvas id="cvSpark" aria-label="Passive enrichment over time"></canvas></div>
+
+      <div class="stats">
+        <span>Simulated time</span><span class="v mono" id="stT">0 s</span>
+        <span>Running at</span><span class="v mono" id="stSpeed">–</span>
+        <span>Swimmers mid-kick</span><span class="v mono" id="stKick">–</span>
+        <span>Kicks per swimmer per second</span><span class="v mono" id="stRate">–</span>
+      </div>
+
+      <p class="hint">Swimmers settle within seconds; the passive particles take thousands of simulated seconds, so switch to <b>Max</b> and give it a minute. Compare <b>No kicks</b> with <b>HRHS</b>.</p>
+
+      <div class="eq">
+        This is the model from our paper
+        <!-- TODO: add the arXiv DOI link to href once the preprint is posted -->
+        <a id="paperLink" href="" target="_top">Near-boundary active kicks control passive distributions in confined active–passive suspensions</a>,
+        run in full: 25 three-disc swimmers and 80 Brownian passive particles in a 2000 × 6 periodic channel, WCA contacts, anisotropic drag and the same time step (<i>dt</i> = 6.25×10<sup>−4</sup> s) as the paper. Lengths are in swimmer half-lengths (≈10 µm).
+        <i>E</i><sup>p</sup> here is a plain histogram estimate of the near-wall fraction, not the paper's smoothed estimator.
+      </div>
+    </div>
+  </div>
+
+  <script id="coreSrc">
+function makeSim(opts) {
+  opts = opts || {};
+  // ---------------- Parameters (config.yml) ----------------
+  const P = {
+    num_swimmers: opts.num_swimmers ?? 25,
+    num_passives: opts.num_passives ?? 80,
+    x_max: opts.x_max ?? 1000.0,
+    y_max: 3.0,
+    base_dt: 0.1,
+    multiplier: opts.multiplier ?? 160,
+    u0: 1.0, alpha: 1.0, alpha_rot: 1.0, alpha_rot_wall: 1.0,
+    velocity: 10.6, rot_diffusion: 0.05,
+    passive_diffusion: 0.00044, passive_radius: 0.5, polarity: -1.0,
+    force_cap: 1000.0, max_step_fraction: 0.1, max_angular_fraction: 15.0,
+    boundary_threshold: 1.5,
+    kick_rate: opts.kick_rate ?? 45.0,
+    kick_torque: opts.kick_torque ?? 13.5,
+  };
+  const TWO_ONE_SIXTH = 1.122462048309373;
+  const MIN_FORCE_DISTANCE = 1e-6;
+  const ZERO_FORCE_THRESHOLD = 1e-12;
+  const RB = 2.0 / (4.0 + Math.sqrt(2.0));
+  const BODY_L = 2.0;
+  const RAD = [RB, Math.SQRT2 * RB, 2.0 * RB];
+  const OFF = [P.polarity * (1.0 - RAD[0]), P.polarity * (1.0 - 2.0 * RAD[0]), P.polarity * (1.0 - 2.0 * RAD[0] - RAD[1])];
+  const active_diameter = 2.0 * RB;
+  const p = 1.0 / RB;
+  const fpar = BODY_L * 2.0 * Math.PI / (Math.log(p) - 0.207 + 0.980 / p - 0.133 / (p * p));
+  const fperp = BODY_L * 4.0 * Math.PI / (Math.log(p) + 0.839 + 0.185 / p + 0.233 / (p * p));
+  const frot = Math.PI * BODY_L ** 3 / (3.0 * (Math.log(p) - 0.662 + 0.917 / p - 0.050 / (p * p)));
+  const box_x = 2.0 * P.x_max;
+
+  // ---------------- RNG (xoshiro128** + Box-Muller) ----------------
+  let s0 = 0x9E3779B9 ^ (opts.seed ?? 42), s1 = 0x243F6A88, s2 = 0xB7E15162, s3 = 0x12345678 ^ ((opts.seed ?? 42) * 2654435761);
+  function rotl(x, k) { return (x << k) | (x >>> (32 - k)); }
+  function nextU32() {
+    const r = Math.imul(rotl(Math.imul(s1, 5), 7), 9) >>> 0;
+    const t = s1 << 9;
+    s2 ^= s0; s3 ^= s1; s1 ^= s2; s0 ^= s3; s2 ^= t; s3 = rotl(s3, 11);
+    return r;
+  }
+  function unif01() { return (nextU32() + 0.5) * 2.3283064365386963e-10; }
+  for (let i = 0; i < 16; i++) nextU32();
+  let gaussSpare = 0, hasSpare = false;
+  function gauss() {
+    if (hasSpare) { hasSpare = false; return gaussSpare; }
+    const u = unif01(), v = unif01();
+    const r = Math.sqrt(-2.0 * Math.log(u)), a = 2.0 * Math.PI * v;
+    gaussSpare = r * Math.sin(a); hasSpare = true;
+    return r * Math.cos(a);
+  }
+  function bounded_rand(lo, hi) { return lo + unif01() * (hi - lo); }
+
+  // ---------------- State ----------------
+  const NS = P.num_swimmers, NP = P.num_passives;
+  const sx = new Float64Array(NS), sy = new Float64Array(NS), th = new Float64Array(NS);
+  const sFx = new Float64Array(NS), sFy = new Float64Array(NS), sTq = new Float64Array(NS), sTw = new Float64Array(NS);
+  const scat = new Uint8Array(NS), sdir = new Float64Array(NS), selap = new Float64Array(NS);
+  const segx = new Float64Array(NS * 3), segy = new Float64Array(NS * 3), segdx = new Float64Array(NS * 3), segdy = new Float64Array(NS * 3);
+  const px = new Float64Array(NP), py = new Float64Array(NP), pFx = new Float64Array(NP), pFy = new Float64Array(NP);
+  const pInt = new Uint8Array(NP);
+
+  // Initial conditions exactly as main.cpp (uniform, swimmers y in [-y_max, y_max])
+  for (let i = 0; i < NS; i++) {
+    sx[i] = bounded_rand(-P.x_max, P.x_max);
+    sy[i] = bounded_rand(-P.y_max, P.y_max);
+    th[i] = bounded_rand(0.0, 2.0 * Math.PI);
+  }
+  for (let i = 0; i < NP; i++) {
+    px[i] = bounded_rand(-P.x_max, P.x_max);
+    py[i] = bounded_rand(-P.y_max + P.passive_radius, P.y_max - P.passive_radius);
+  }
+
+  // ---------------- Cell list in x (replaces the exact Verlet list) ----------------
+  // Every pair whose centres are within the interaction range is visited, so no
+  // interaction is missed (same guarantee as the C++ list). Ranges:
+  const maxSeg = Math.max(...OFF.map(Math.abs));
+  const range_ss = TWO_ONE_SIXTH * 2.0 * RAD[2] + 2.0 * maxSeg;
+  const range_sp = TWO_ONE_SIXTH * (RAD[2] + P.passive_radius) + maxSeg;
+  const range_pp = TWO_ONE_SIXTH * 2.0 * P.passive_radius;
+  const cellW0 = Math.max(range_ss, range_sp, range_pp) + 1e-9;
+  const NC = Math.max(3, Math.floor(box_x / cellW0));
+  const cellW = box_x / NC;
+  const sHead = new Int32Array(NC).fill(-1), sNext = new Int32Array(NS), sCell = new Int32Array(NS);
+  const pHead = new Int32Array(NC).fill(-1), pNext = new Int32Array(NP), pCell = new Int32Array(NP);
+  function cellOf(x) {
+    let c = Math.floor((x + P.x_max) / cellW);
+    if (c < 0) c += NC; else if (c >= NC) c -= NC;
+    if (c < 0 || c >= NC) c = ((c % NC) + NC) % NC;
+    return c;
+  }
+  function pbc(dx) {
+    const half = 0.5 * box_x;
+    if (dx > half) return dx - box_x;
+    if (dx < -half) return dx + box_x;
+    return dx;
+  }
+
+  function wcaForce(r, sigma) {
+    if (r < MIN_FORCE_DISTANCE) return P.force_cap;
+    let f = 0.0;
+    if (r < TWO_ONE_SIXTH * sigma) {
+      const q = sigma / r, q2 = q * q, sr6 = q2 * q2 * q2;
+      f = 24.0 * P.u0 * sr6 * (2.0 * sr6 - 1.0) / r;
+    }
+    return f > P.force_cap ? P.force_cap : f;
+  }
+
+  const stats = { kickOnsets: 0, kickSteps: 0, steps: 0, t: 0 };
+
+  function computeForces() {
+    for (let i = 0; i < NS; i++) {
+      sFx[i] = 0; sFy[i] = 0; sTq[i] = 0; sTw[i] = 0;
+      const ct = Math.cos(th[i]), st = Math.sin(th[i]);
+      for (let k = 0; k < 3; k++) {
+        const j = 3 * i + k;
+        segdx[j] = OFF[k] * ct; segdy[j] = OFF[k] * st;
+        segx[j] = sx[i] + segdx[j]; segy[j] = sy[i] + segdy[j];
+      }
+    }
+    for (let i = 0; i < NP; i++) { pFx[i] = 0; pFy[i] = 0; pInt[i] = 0; }
+
+    for (let i = 0; i < NS; i++) sHead[sCell[i]] = -1;
+    for (let i = 0; i < NP; i++) pHead[pCell[i]] = -1;
+    for (let i = 0; i < NS; i++) { const c = cellOf(sx[i]); sCell[i] = c; sNext[i] = sHead[c]; sHead[c] = i; }
+    for (let i = 0; i < NP; i++) { const c = cellOf(px[i]); pCell[i] = c; pNext[i] = pHead[c]; pHead[c] = i; }
+
+    // 1. swimmer-swimmer (each unordered pair once: j in same cell with j<i? use i<j test)
+    for (let i = 0; i < NS; i++) {
+      const ci = sCell[i];
+      for (let dc = -1; dc <= 1; dc++) {
+        let c = ci + dc; if (c < 0) c += NC; else if (c >= NC) c -= NC;
+        for (let j = sHead[c]; j !== -1; j = sNext[j]) {
+          if (j <= i) continue;
+          for (let a = 0; a < 3; a++) {
+            const ia = 3 * i + a;
+            for (let b = 0; b < 3; b++) {
+              const jb = 3 * j + b;
+              const dx = pbc(segx[ia] - segx[jb]);
+              const dy = segy[ia] - segy[jb];
+              const r2 = dx * dx + dy * dy;
+              const sigma = RAD[a] + RAD[b];
+              const rc = TWO_ONE_SIXTH * sigma;
+              if (r2 >= rc * rc) continue;
+              const r = Math.sqrt(r2);
+              const fm = wcaForce(r, sigma);
+              if (Math.abs(fm) > ZERO_FORCE_THRESHOLD) {
+                const inv = 1.0 / r, fx = fm * dx * inv, fy = fm * dy * inv;
+                sFx[i] += fx; sFy[i] += fy; sTq[i] += segdx[ia] * fy - segdy[ia] * fx;
+                sFx[j] -= fx; sFy[j] -= fy; sTq[j] -= segdx[jb] * fy - segdy[jb] * fx;
+              }
+            }
+          }
+        }
+      }
+    }
+    // 2. swimmer-passive
+    for (let i = 0; i < NS; i++) {
+      const ci = sCell[i];
+      for (let dc = -1; dc <= 1; dc++) {
+        let c = ci + dc; if (c < 0) c += NC; else if (c >= NC) c -= NC;
+        for (let j = pHead[c]; j !== -1; j = pNext[j]) {
+          for (let a = 0; a < 3; a++) {
+            const ia = 3 * i + a;
+            const dx = pbc(segx[ia] - px[j]);
+            const dy = segy[ia] - py[j];
+            const r2 = dx * dx + dy * dy;
+            const sigma = RAD[a] + P.passive_radius;
+            const rc = TWO_ONE_SIXTH * sigma;
+            if (r2 >= rc * rc) continue;
+            const r = Math.sqrt(r2);
+            const fm = wcaForce(r, sigma);
+            if (Math.abs(fm) > ZERO_FORCE_THRESHOLD) {
+              const inv = 1.0 / r, fx = fm * dx * inv, fy = fm * dy * inv;
+              sFx[i] += fx; sFy[i] += fy; sTq[i] += segdx[ia] * fy - segdy[ia] * fx;
+              pFx[j] -= fx; pFy[j] -= fy; pInt[j] = 1;
+            }
+          }
+        }
+      }
+    }
+    // 3. passive-passive
+    const sigpp = 2.0 * P.passive_radius, rcpp2 = (TWO_ONE_SIXTH * sigpp) ** 2;
+    for (let i = 0; i < NP; i++) {
+      const ci = pCell[i];
+      for (let dc = -1; dc <= 1; dc++) {
+        let c = ci + dc; if (c < 0) c += NC; else if (c >= NC) c -= NC;
+        for (let j = pHead[c]; j !== -1; j = pNext[j]) {
+          if (j <= i) continue;
+          const dx = pbc(px[i] - px[j]);
+          const dy = py[i] - py[j];
+          const r2 = dx * dx + dy * dy;
+          if (r2 >= rcpp2) continue;
+          const r = Math.sqrt(r2);
+          const fm = wcaForce(r, sigpp);
+          if (Math.abs(fm) > ZERO_FORCE_THRESHOLD) {
+            const inv = 1.0 / r, fx = fm * dx * inv, fy = fm * dy * inv;
+            pFx[i] += fx; pFy[i] += fy; pFx[j] -= fx; pFy[j] -= fy;
+          }
+        }
+      }
+    }
+    // 4. walls (WCA with sigma = body radius, r = distance to wall)
+    for (let i = 0; i < NS; i++) {
+      for (let a = 0; a < 3; a++) {
+        const ia = 3 * i + a, sigma = RAD[a];
+        const fb = wcaForce(segy[ia] + P.y_max, sigma);
+        if (fb > 0.0) { sFy[i] += fb; sTw[i] += segdx[ia] * fb; }
+        const ft = wcaForce(P.y_max - segy[ia], sigma);
+        if (ft > 0.0) { sFy[i] -= ft; sTw[i] -= segdx[ia] * ft; }
+      }
+    }
+    for (let i = 0; i < NP; i++) {
+      const fb = wcaForce(py[i] + P.y_max, P.passive_radius);
+      if (fb > 0.0) pFy[i] += fb;
+      const ft = wcaForce(P.y_max - py[i], P.passive_radius);
+      if (ft > 0.0) pFy[i] -= ft;
+    }
+  }
+
+  function applyKicks(dt) {
+    const prob = 1.0 - Math.exp(-P.kick_rate * dt);
+    for (let i = 0; i < NS; i++) {
+      const near_top = (P.y_max - sy[i]) <= P.boundary_threshold;
+      const near_bottom = (sy[i] + P.y_max) <= P.boundary_threshold;
+      if (!scat[i]) {
+        if ((near_top || near_bottom) && unif01() < prob) {
+          scat[i] = 1; selap[i] = 0.0; stats.kickOnsets++;
+          const ct = Math.cos(th[i]);
+          if (near_top) sdir[i] = (ct < 0.0) ? 1.0 : -1.0;
+          else sdir[i] = (ct < 0.0) ? -1.0 : 1.0;
+        }
+      } else {
+        const far = !near_top && !near_bottom;
+        selap[i] += dt;
+        const timed_out = selap[i] >= 1.0 / P.rot_diffusion;
+        const ctn = Math.cos(th[i]);
+        let dir_now = 0.0;
+        if (near_top) dir_now = (ctn < 0.0) ? 1.0 : -1.0;
+        else if (near_bottom) dir_now = (ctn < 0.0) ? -1.0 : 1.0;
+        const flipped = (dir_now !== 0.0) && (dir_now !== sdir[i]);
+        if (far || timed_out || flipped) { scat[i] = 0; sdir[i] = 0.0; selap[i] = 0.0; }
+      }
+      if (scat[i]) stats.kickSteps++;
+    }
+  }
+
+  function move(dt) {
+    const sq_rot = Math.sqrt(2.0 * P.rot_diffusion * dt);
+    const sq_pas = Math.sqrt(2.0 * P.passive_diffusion * dt);
+    const max_speed = (P.max_step_fraction * active_diameter) / dt;
+    const max_ang = P.max_angular_fraction / dt;
+    const ifpar = 1.0 / fpar, ifperp = 1.0 / fperp;
+    for (let i = 0; i < NS; i++) {
+      const ct = Math.cos(th[i]), st = Math.sin(th[i]);
+      const fpl = sFx[i] * ct + sFy[i] * st;
+      const fpp = -sFx[i] * st + sFy[i] * ct;
+      let vpl = fpl * ifpar, vpp = fpp * ifperp;
+      const sp = Math.sqrt(vpl * vpl + vpp * vpp);
+      if (sp > max_speed) { const sc = max_speed / sp; vpl *= sc; vpp *= sc; }
+      const vx = P.alpha * (vpl * ct - vpp * st);
+      const vy = P.alpha * (vpl * st + vpp * ct);
+      sx[i] += (P.velocity * ct + vx) * dt;
+      sy[i] += (P.velocity * st + vy) * dt;
+      let om = (P.alpha_rot * sTq[i] + P.alpha_rot_wall * sTw[i]) / frot;
+      if (Math.abs(om) > max_ang) om = Math.sign(om) * max_ang;
+      const tk = scat[i] ? P.kick_torque * sdir[i] : 0.0;
+      om += P.alpha_rot * tk;
+      th[i] += om * dt + sq_rot * gauss();
+      if (th[i] > 2.0 * Math.PI) th[i] -= 2.0 * Math.PI;
+      else if (th[i] < 0.0) th[i] += 2.0 * Math.PI;
+      if (sx[i] > P.x_max) sx[i] -= box_x; else if (sx[i] < -P.x_max) sx[i] += box_x;
+      if (sy[i] > P.y_max) sy[i] = P.y_max; else if (sy[i] < -P.y_max) sy[i] = -P.y_max;
+    }
+    for (let i = 0; i < NP; i++) {
+      let vx = P.alpha * pFx[i], vy = P.alpha * pFy[i];
+      const sp = Math.sqrt(vx * vx + vy * vy);
+      if (sp > max_speed) { const sc = max_speed / sp; vx *= sc; vy *= sc; }
+      px[i] += vx * dt + sq_pas * gauss();
+      py[i] += vy * dt + sq_pas * gauss();
+      if (px[i] > P.x_max) px[i] -= box_x; else if (px[i] < -P.x_max) px[i] += box_x;
+      if (py[i] > P.y_max) py[i] = P.y_max; else if (py[i] < -P.y_max) py[i] = -P.y_max;
+    }
+  }
+
+  // One integration step, same order as main.cpp's loop
+  function step() {
+    const dt = P.base_dt / P.multiplier;
+    computeForces();
+    applyKicks(dt);
+    move(dt);
+    stats.steps++;
+    stats.t = stats.steps * dt;
+  }
+
+  return {
+    P, step, stats,
+    sx, sy, th, scat, px, py, pInt,
+    RAD, OFF, NS, NP,
+    get dt() { return P.base_dt / P.multiplier; },
+    setKick(k, tau) { P.kick_rate = k; P.kick_torque = tau; },
+    consts: { fpar, fperp, frot, mu_par: 1 / fpar, mu_perp: 1 / fperp, mu_R: 1 / frot, RB, NC, cellW },
+  };
+}
+
+  </script>
+  <script>
+  (function () {
+    'use strict';
+    // ---------------- Worker: runs the simulation off the main thread ----------------
+    function engine(self, BUDGET) {
+      var sim = null, mode = 0, paused = false, k = 45, tau = 13.5;
+      var NB = 120, hs, hp, nFramesH = 0;
+      var epSeries = [], epAcc = 0, epN = 0, epBlockStart = 0, wallAcc = 0, wallN = 0;
+      var cut = 0, phiU = 0;
+      var kicksAtMark = 0, tMark = 0, rateNow = NaN;
+      var clockSim = 0, clockWall = 0, lastPost = 0, measT = 0, measSim = 0, speedNow = 0, tChange = 0;
+      function clearStats() {
+        hs = new Float64Array(NB); hp = new Float64Array(NB); nFramesH = 0;
+        epSeries = []; epAcc = 0; epN = 0; wallAcc = 0; wallN = 0;
+        epBlockStart = sim ? sim.stats.t : 0; tChange = epBlockStart;
+      }
+      function init(seed) {
+        sim = makeSim({ seed: seed, kick_rate: k, kick_torque: tau });
+        cut = 2.5 - (0.5 + sim.consts.RB); phiU = (2.5 - cut) / 2.5;
+        clearStats(); kicksAtMark = 0; tMark = 0; rateNow = NaN;
+        clockSim = 0; clockWall = performance.now(); measT = clockWall; measSim = 0;
+      }
+      function record() {
+        var i, b;
+        for (i = 0; i < sim.NS; i++) { b = Math.floor((sim.sy[i] + 3) / 6 * NB); if (b < 0) b = 0; if (b >= NB) b = NB - 1; hs[b]++; }
+        var w = 0;
+        for (i = 0; i < sim.NP; i++) { b = Math.floor((sim.py[i] + 3) / 6 * NB); if (b < 0) b = 0; if (b >= NB) b = NB - 1; hp[b]++; if (Math.abs(sim.py[i]) >= cut) w++; }
+        nFramesH++;
+        wallAcc += w; wallN += sim.NP; epAcc += w; epN += sim.NP;
+        if (sim.stats.t - epBlockStart >= 20) {          // one point per 20 simulated seconds
+          epSeries.push(epAcc / epN / phiU); epAcc = 0; epN = 0; epBlockStart = sim.stats.t;
+          if (epSeries.length > 2000) epSeries.splice(0, epSeries.length - 2000);
+        }
+        if (sim.stats.t - tMark >= 5) {
+          rateNow = (sim.stats.kickOnsets - kicksAtMark) / (sim.NS * (sim.stats.t - tMark));
+          kicksAtMark = sim.stats.kickOnsets; tMark = sim.stats.t;
+        }
+      }
+      function runFor(budgetMs, targetSim) {
+        var t0 = performance.now();
+        var m = sim.P.multiplier;
+        while (performance.now() - t0 < budgetMs) {
+          for (var j = 0; j < 40; j++) {
+            if (targetSim !== null && sim.stats.t >= targetSim) return;
+            sim.step();
+            if (sim.stats.steps % m === 0) record();   // paper's output spacing, dt0 = 0.1 s
+          }
+        }
+      }
+      function post() {
+        var nScat = 0; for (var i = 0; i < sim.NS; i++) nScat += sim.scat[i];
+        self.postMessage({
+          t: sim.stats.t, sx: sim.sx.slice(), sy: sim.sy.slice(), th: sim.th.slice(), scat: sim.scat.slice(),
+          px: sim.px.slice(), py: sim.py.slice(), hs: hs.slice(), hp: hp.slice(), nFramesH: nFramesH,
+          ep: wallN ? wallAcc / wallN / phiU : NaN, epSeries: epSeries.slice(), nScat: nScat, rate: rateNow,
+          speed: speedNow, since: sim.stats.t - tChange, paused: paused, RAD: sim.RAD, OFF: sim.OFF
+        });
+      }
+      function tick() {
+        var now = performance.now();
+        if (!paused) {
+          if (mode === 0) runFor(BUDGET, null);
+          else {
+            var target = clockSim + (now - clockWall) / 1000 * mode;
+            if (target - sim.stats.t > 2 * mode) { clockSim = sim.stats.t; clockWall = now; target = sim.stats.t; } // fell behind: rebase
+            runFor(BUDGET, target);
+          }
+        }
+        now = performance.now();
+        if (now - measT > 500) { speedNow = (sim.stats.t - measSim) / ((now - measT) / 1000); measT = now; measSim = sim.stats.t; }
+        if (now - lastPost > 30) { post(); lastPost = now; }
+        setTimeout(tick, mode === 0 ? 0 : 4);
+      }
+      self.onmessage = function (e) {
+        var d = e.data;
+        if (d.type === 'init') { k = d.k; tau = d.tau; mode = d.mode; init(d.seed); tick(); }
+        else if (d.type === 'params') { k = d.k; tau = d.tau; sim.setKick(k, tau); clearStats(); }
+        else if (d.type === 'mode') { mode = d.mode; clockSim = sim.stats.t; clockWall = performance.now(); }
+        else if (d.type === 'pause') { paused = d.paused; clockSim = sim.stats.t; clockWall = performance.now(); post(); }
+        else if (d.type === 'reset') { init(d.seed); }
+      };
+    }
+    var WORKER_SRC = makeSim.toString() + '\n' + engine.toString() + '\nengine(self, 25);';
+
+    // ---------------- UI state ----------------
+    var state = { k: 45, tau: 13.5, mode: 1, paused: false, follow: 0, camX: null, snap: null };
+    var K_MIN = 0.05, K_MAX = 45, T_MIN = 0.05, T_MAX = 13.5;
+    var kSlider = document.getElementById('kRate'), tSlider = document.getElementById('kTau');
+    function toLog(v, lo, hi) { return Math.round(1000 * Math.log(v / lo) / Math.log(hi / lo)); }
+    function fromLog(s, lo, hi) { return lo * Math.pow(hi / lo, s / 1000); }
+    function fmt(v) { return v >= 10 ? v.toFixed(1) : v >= 1 ? v.toFixed(2) : v.toFixed(3); }
+
+    // Run in a Web Worker when allowed; otherwise (some previews and sandboxes block
+    // workers) fall back to running the same engine on the page itself.
+    var worker = null, pending = [], usingFallback = false;
+    function startFallback() {
+      if (usingFallback) return;
+      usingFallback = true;
+      if (worker) { try { worker.terminate(); } catch (e) {} }
+      var local = { postMessage: function (d) { state.snap = d; }, onmessage: null };
+      engine(local, 10);
+      worker = { postMessage: function (m) { local.onmessage({ data: m }); } };
+      pending.forEach(function (m) { worker.postMessage(m); }); pending = [];
+    }
+    function send(m) { if (!usingFallback) pending.push(m); worker.postMessage(m); }
+    try {
+      worker = new Worker(URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' })));
+      worker.onmessage = function (e) { if (!usingFallback) { state.snap = e.data; pending = []; } };
+      worker.onerror = function () { startFallback(); };
+    } catch (err) { worker = null; }
+    if (!worker) startFallback();
+    setTimeout(function () { if (!state.snap) startFallback(); }, 1500);
+
+    function syncControls() {
+      var kOn = state.k > 0;
+      kSlider.value = kOn ? toLog(state.k, K_MIN, K_MAX) : 0;
+      tSlider.value = toLog(state.tau, T_MIN, T_MAX);
+      document.getElementById('kVal').textContent = kOn ? fmt(state.k) + ' s⁻¹' : '0 (off)';
+      document.getElementById('tVal').textContent = fmt(state.tau) + ' rad s⁻¹';
+      tSlider.disabled = !kOn;
+      var pres = document.querySelectorAll('#presets button');
+      for (var i = 0; i < pres.length; i++) {
+        var pk = +pres[i].dataset.k, pt = +pres[i].dataset.t;
+        var match = pk === 0 ? state.k === 0 : (Math.abs(pk - state.k) < 1e-9 && Math.abs(pt - state.tau) < 1e-9);
+        pres[i].classList.toggle('on', match);
+      }
+      var sp = document.querySelectorAll('#speeds button');
+      for (i = 0; i < sp.length; i++) sp[i].classList.toggle('on', +sp[i].dataset.s === state.mode);
+      document.getElementById('btnPlay').textContent = state.paused ? 'Play' : 'Pause';
+    }
+    function sendParams() { send({ type: 'params', k: state.k, tau: state.tau }); syncControls(); }
+
+    document.getElementById('presets').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      state.k = +b.dataset.k; state.tau = +b.dataset.t; sendParams();
+    });
+    kSlider.addEventListener('input', function () {
+      var s = +kSlider.value;
+      state.k = s === 0 ? 0 : fromLog(s, K_MIN, K_MAX);
+      if (s === 1000) state.k = K_MAX;
+      sendParams();
+    });
+    tSlider.addEventListener('input', function () {
+      var s = +tSlider.value; state.tau = s === 1000 ? T_MAX : s === 0 ? T_MIN : fromLog(s, T_MIN, T_MAX); sendParams();
+    });
+    document.getElementById('speeds').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      state.mode = +b.dataset.s; send({ type: 'mode', mode: state.mode }); syncControls();
+    });
+    document.getElementById('btnPlay').addEventListener('click', function () {
+      state.paused = !state.paused; send({ type: 'pause', paused: state.paused }); syncControls();
+    });
+    document.getElementById('btnNext').addEventListener('click', function () { state.follow = (state.follow + 1) % 25; state.camX = null; });
+    document.getElementById('btnReset').addEventListener('click', function () {
+      send({ type: 'reset', seed: (Math.random() * 1e9) | 0 }); state.camX = null;
+    });
+
+    // ---------------- Drawing ----------------
+    var css = getComputedStyle(document.documentElement);
+    var C = {
+      ink: css.getPropertyValue('--ink').trim(), muted: css.getPropertyValue('--muted').trim(),
+      line: css.getPropertyValue('--line').trim(), active: css.getPropertyValue('--active').trim(),
+      passive: css.getPropertyValue('--passive').trim(), kick: css.getPropertyValue('--kick').trim(),
+      wall: css.getPropertyValue('--wall').trim(), band: css.getPropertyValue('--band').trim()
+    };
+    function fitCanvas(cv) {
+      var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      var w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx: ctx, w: r.width, h: r.height };
+    }
+    var cvZ = document.getElementById('cvZoom'), cvO = document.getElementById('cvOverview');
+    var cvH = document.getElementById('cvHist'), cvS = document.getElementById('cvSpark');
+    var XMAX = 1000, BOX = 2000, YMAX = 3, LB = 1.5;
+    function wrapDx(dx) { if (dx > BOX / 2) dx -= BOX; else if (dx < -BOX / 2) dx += BOX; return dx; }
+
+    function drawSwimmer(ctx, X, Y, s, x, y, th, kicking, RAD, OFF) {
+      var ct = Math.cos(th), st = Math.sin(th);
+      ctx.fillStyle = kicking ? C.kick : C.active;
+      ctx.globalAlpha = 0.85;
+      for (var k = 0; k < 3; k++) {
+        ctx.beginPath(); ctx.arc(X(x + OFF[k] * ct), Y(y + OFF[k] * st), RAD[k] * s, 0, 2 * Math.PI); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      // heading marker: short line from the centre along the swimming direction
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1, 0.08 * s);
+      ctx.beginPath(); ctx.moveTo(X(x), Y(y)); ctx.lineTo(X(x + 0.6 * ct), Y(y + 0.6 * st)); ctx.stroke();
+    }
+
+    function drawZoom(sn) {
+      var f = fitCanvas(cvZ), ctx = f.ctx, w = f.w, h = f.h;
+      var pad = 6, s = (h - 2 * pad) / 6;            // px per unit
+      var W = w / s;                                   // window width in sim units
+      var target = sn.sx[state.follow];
+      state.camX = target;
+      var cx = state.camX;
+      var X = function (x) { return w / 2 + wrapDx(x - cx) * s; };
+      var Y = function (y) { return pad + (YMAX - y) * s; };
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = C.band;
+      ctx.fillRect(0, Y(YMAX), w, LB * s); ctx.fillRect(0, Y(-YMAX + LB), w, LB * s);
+      ctx.strokeStyle = C.wall; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, Y(YMAX)); ctx.lineTo(w, Y(YMAX)); ctx.moveTo(0, Y(-YMAX)); ctx.lineTo(w, Y(-YMAX)); ctx.stroke();
+      var half = W / 2 + 2, i, dx;
+      ctx.fillStyle = C.passive;
+      for (i = 0; i < sn.px.length; i++) {
+        dx = wrapDx(sn.px[i] - cx); if (Math.abs(dx) > half) continue;
+        ctx.beginPath(); ctx.arc(X(sn.px[i]), Y(sn.py[i]), 0.5 * s, 0, 2 * Math.PI); ctx.fill();
+      }
+      for (i = 0; i < sn.sx.length; i++) {
+        dx = wrapDx(sn.sx[i] - cx); if (Math.abs(dx) > half) continue;
+        drawSwimmer(ctx, X, Y, s, sn.sx[i], sn.sy[i], sn.th[i], sn.scat[i], sn.RAD, sn.OFF);
+      }
+      // mark the followed swimmer
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.arc(X(sn.sx[state.follow]), Y(sn.sy[state.follow]), 1.25 * s, 0, 2 * Math.PI); ctx.stroke();
+      ctx.setLineDash([]);
+      document.getElementById('zoomLabel').textContent = 'swimmer ' + (state.follow + 1) + ' of 25 · x = ' + sn.sx[state.follow].toFixed(0);
+      return W;
+    }
+
+    function drawOverview(sn, W) {
+      var f = fitCanvas(cvO), ctx = f.ctx, w = f.w, h = f.h;
+      var ROWS = 10, L = BOX / ROWS, gap = 0.35;      // each strip is 200 long; gap in units of strip height
+      var s = w / L, rowH = 6 * s, step = h / ROWS;
+      var gapPx = step - rowH;
+      ctx.clearRect(0, 0, w, h);
+      function rowOf(x) { var u = x + XMAX; var r = Math.floor(u / L); if (r >= ROWS) r = ROWS - 1; if (r < 0) r = 0; return r; }
+      var r, i;
+      for (r = 0; r < ROWS; r++) {
+        var top = r * step + gapPx / 2;
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, top, w, rowH);
+        ctx.fillStyle = C.band; ctx.fillRect(0, top, w, LB * s); ctx.fillRect(0, top + rowH - LB * s, w, LB * s);
+        ctx.strokeStyle = C.wall; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, top); ctx.lineTo(w, top); ctx.moveTo(0, top + rowH); ctx.lineTo(w, top + rowH); ctx.stroke();
+      }
+      function XY(x, y) { var u = x + XMAX, rr = rowOf(x); return [(u - rr * L) * s, rr * step + gapPx / 2 + (YMAX - y) * s]; }
+      var pr = Math.max(1.1, 0.5 * s);
+      ctx.fillStyle = C.passive;
+      for (i = 0; i < sn.px.length; i++) { var q = XY(sn.px[i], sn.py[i]); ctx.beginPath(); ctx.arc(q[0], q[1], pr, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.lineCap = 'round';
+      for (i = 0; i < sn.sx.length; i++) {
+        var ct = Math.cos(sn.th[i]), st = Math.sin(sn.th[i]);
+        var a = XY(sn.sx[i] - 0.9 * ct, sn.sy[i] - 0.9 * st), b = XY(sn.sx[i] + 0.9 * ct, sn.sy[i] + 0.9 * st);
+        if (Math.abs(a[0] - b[0]) > 4 * s || Math.abs(a[1] - b[1]) > 4 * s) { a = XY(sn.sx[i], sn.sy[i]); b = a; }
+        ctx.strokeStyle = sn.scat[i] ? C.kick : C.active; ctx.lineWidth = Math.max(2.2, 1.1 * s);
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0] + 0.01, b[1]); ctx.stroke();
+      }
+      // close-up window outline
+      var c0 = state.camX === null ? sn.sx[state.follow] : state.camX;
+      var x0 = c0 - W / 2, x1 = c0 + W / 2;
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+      function box(xa, xb) {
+        var p = XY(xa, YMAX), rr = rowOf(xa), len = (xb - xa) * s;
+        ctx.strokeRect(p[0], rr * step + gapPx / 2 - 2, len, rowH + 4);
+      }
+      // split the window across strip boundaries / the periodic seam
+      var segs = [];
+      var a0 = x0, a1 = x1;
+      if (a0 < -XMAX) { segs.push([a0 + BOX, XMAX]); a0 = -XMAX; }
+      if (a1 > XMAX) { segs.push([-XMAX, a1 - BOX]); a1 = XMAX; }
+      segs.push([a0, a1]);
+      segs.forEach(function (sg) {
+        var xa = sg[0], xb = sg[1];
+        while (xa < xb - 1e-9) {
+          var rr = rowOf(xa), rowEnd = -XMAX + (rr + 1) * L, e = Math.min(xb, rowEnd);
+          box(xa, e); xa = e;
+        }
+      });
+    }
+
+    function drawHist(sn) {
+      var f = fitCanvas(cvH), ctx = f.ctx, w = f.w, h = f.h;
+      var ml = 34, mr = 10, mt = 10, mb = 30, pw = w - ml - mr, ph = h - mt - mb;
+      ctx.clearRect(0, 0, w, h);
+      var NB = sn.hs.length, bw = 6 / NB;
+      function dens(hist) {
+        var tot = 0, i, out = new Float64Array(NB);
+        for (i = 0; i < NB; i++) tot += hist[i];
+        if (!tot) return null;
+        for (i = 0; i < NB; i++) out[i] = hist[i] / tot / bw;
+        return out;
+      }
+      var ds = dens(sn.hs), dp = dens(sn.hp);
+      var ymax = 1.2;
+      if (ds && dp) { for (var i = 0; i < NB; i++) ymax = Math.max(ymax, ds[i] * 1.08, dp[i] * 1.08); }
+      ymax = Math.ceil(ymax * 2) / 2;
+      var X = function (y) { return ml + (y + 3) / 6 * pw; };
+      var Y = function (v) { return mt + ph - v / ymax * ph; };
+      ctx.fillStyle = C.band;
+      ctx.fillRect(X(-3), mt, X(-3 + LB) - X(-3), ph); ctx.fillRect(X(3 - LB), mt, X(3) - X(3 - LB), ph);
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.fillStyle = C.muted;
+      ctx.font = '11px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      [-3, -2, -1, 0, 1, 2, 3].forEach(function (t) {
+        ctx.beginPath(); ctx.moveTo(X(t), mt + ph); ctx.lineTo(X(t), mt + ph + 4); ctx.stroke();
+        ctx.fillText(String(t), X(t), mt + ph + 6);
+      });
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (var v = 0; v <= ymax + 1e-9; v += ymax > 3 ? 1 : 0.5) {
+        ctx.beginPath(); ctx.moveTo(ml, Y(v)); ctx.lineTo(ml + pw, Y(v)); ctx.stroke();
+        ctx.fillText(v.toFixed(1), ml - 5, Y(v));
+      }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillStyle = C.muted;
+      ctx.fillText('position across the channel, y', ml + pw / 2, h - 1);
+      ctx.strokeStyle = C.wall; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(X(-3), mt); ctx.lineTo(X(-3), mt + ph); ctx.moveTo(X(3), mt); ctx.lineTo(X(3), mt + ph); ctx.stroke();
+      function line(d, col) {
+        if (!d) return;
+        ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath();
+        for (var i = 0; i < NB; i++) { var yy = -3 + (i + 0.5) * bw; if (i === 0) ctx.moveTo(X(yy), Y(d[i])); else ctx.lineTo(X(yy), Y(d[i])); }
+        ctx.stroke();
+      }
+      line(dp, C.passive); line(ds, C.active);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.font = '12px "IBM Plex Sans", sans-serif';
+      ctx.fillStyle = C.active; ctx.fillText('swimmers', ml + 8, mt + 4);
+      ctx.fillStyle = C.passive; ctx.fillText('passive', ml + 8, mt + 20);
+      document.getElementById('histLabel').textContent = Math.round(sn.since).toLocaleString() + ' s of data';
+    }
+
+    function drawSpark(sn) {
+      var f = fitCanvas(cvS), ctx = f.ctx, w = f.w, h = f.h;
+      ctx.clearRect(0, 0, w, h);
+      var d = sn.epSeries, m = 6;
+      var lo = 0, hi = 3;
+      for (var i = 0; i < d.length; i++) hi = Math.max(hi, d[i] * 1.1);
+      var Y = function (v) { return m + (1 - (v - lo) / (hi - lo)) * (h - 2 * m); };
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(0, Y(1)); ctx.lineTo(w, Y(1)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = C.muted; ctx.font = '11px "IBM Plex Mono", monospace'; ctx.textBaseline = 'bottom'; ctx.textAlign = 'right';
+      ctx.fillText('E = 1', w - 4, Y(1) - 2);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText(d.length ? 'last ' + Math.round(d.length * 20).toLocaleString() + ' s' : 'collecting…', 4, 2);
+      if (d.length < 2) return;
+      ctx.strokeStyle = C.passive; ctx.lineWidth = 1.8; ctx.beginPath();
+      for (i = 0; i < d.length; i++) { var x = i / (d.length - 1) * w; if (i === 0) ctx.moveTo(x, Y(d[i])); else ctx.lineTo(x, Y(d[i])); }
+      ctx.stroke();
+    }
+
+    function frame() {
+      var sn = state.snap;
+      if (sn) {
+        var W = drawZoom(sn);
+        drawOverview(sn, W);
+        drawHist(sn);
+        drawSpark(sn);
+        document.getElementById('eVal').textContent = isFinite(sn.ep) ? sn.ep.toFixed(2) : '–';
+        document.getElementById('stT').textContent = Math.floor(sn.t).toLocaleString() + ' s';
+        document.getElementById('stSpeed').textContent = sn.paused ? 'paused' : (sn.speed > 0 ? Math.round(sn.speed) + '× real time' : '–');
+        document.getElementById('stKick').textContent = sn.nScat + ' of 25';
+        document.getElementById('stRate').textContent = state.k > 0 ? (isFinite(sn.rate) ? sn.rate.toFixed(2) : '–') : '0';
+      }
+      requestAnimationFrame(frame);
+    }
+
+    syncControls();
+    send({ type: 'init', seed: (Math.random() * 1e9) | 0, k: state.k, tau: state.tau, mode: state.mode });
+    requestAnimationFrame(frame);
+
+    // When embedded in an iframe, tell the parent page how tall we are.
+    if (window.parent !== window) {
+      var report = function () {
+        window.parent.postMessage({ type: 'sim-height', height: document.documentElement.scrollHeight }, '*');
+      };
+      new ResizeObserver(report).observe(document.body);
+      window.addEventListener('load', report);
+    }
+  })();
+  </script>
+</body>
+</html>

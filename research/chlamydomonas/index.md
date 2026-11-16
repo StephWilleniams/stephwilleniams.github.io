@@ -21,7 +21,7 @@ In my PhD with Prof. Marco Polin at the University of Warwick, I combined swimmi
 
 ## What's next
 
-I am generalizing these results to a broader class of microswimmers, showing how scattering events near a boundary control where passive particles end up. My squid research extends the same problem to a much more complex case: a boundary that is alive.
+I am generalizing these results to a broader class of microswimmers, showing how scattering events near a boundary control where passive particles end up. You can run that model in your browser on the [interactive page]({{ '/interactive/#active-kicks' | relative_url }}). My squid research extends the same problem to a much more complex case: a boundary that is alive.
 
 ## Outputs
 
