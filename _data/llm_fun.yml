@@ -14,7 +14,10 @@
   blurb: >-
     A hike route mapper on topo maps. Tap to draw a route that snaps to real trails, or paste
     a short route script (Claude can write one from a hike description), and get distance,
-    ascent, an elevation profile and a GPX file.
+    ascent, an elevation profile and a GPX file. On the trail it shows where you are on the
+    route and how far is left.
+  involvement: >-
+    Minimal, but I designed the tool to help plan hikes on holiday.
   made: Built by Claude in one evening, November 2026, on Leaflet, BRouter and Open-Meteo.
   tags: [Hiking, Maps, GPX, Claude]
   image: /images/llm-fun/trail-sketch.jpg

@@ -79,6 +79,9 @@ td:first-child{font-family:ui-monospace,Menlo,monospace;white-space:nowrap;color
 .leaflet-container{font:14px Barlow,sans-serif}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--bg);color:var(--ink)}
 .pop{display:grid;gap:8px;min-width:210px}.pop .tools .btn{flex:1}
+.here{background:var(--bg);color:var(--ink);border-radius:10px;padding:4px 2px 4px 12px;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;gap:4px;font:14px/1.3 Barlow,sans-serif;max-width:min(330px,calc(100vw - 90px))}
+.here[hidden]{display:none}.here b{font-weight:600}.here small{color:var(--mut);white-space:nowrap}.here .x{min-height:36px;min-width:36px}
+.locbtn a{display:grid!important;place-items:center;color:#333}.locbtn.on a{color:#1e88e5}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:15px;opacity:0;pointer-events:none;transition:.2s;z-index:2000;max-width:calc(100vw - 32px)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -318,6 +321,10 @@ st.over.forEach(n=>over[n]&&over[n].addTo(map));
 L.control.zoom({position:'topright'}).addTo(map);
 L.control.layers(base,over,{position:'topright'}).addTo(map);
 L.control.scale({position:'bottomleft'}).addTo(map);
+const LocCtl=L.Control.extend({onAdd(){const d=L.DomUtil.create('div','leaflet-bar locbtn');d.innerHTML='<a href="#" role="button" title="Show where I am" aria-label="Show where I am"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3.5M12 18v3.5M2.5 12H6M18 12h3.5"/></svg></a>';L.DomEvent.disableClickPropagation(d);d.querySelector('a').addEventListener('click',e=>{e.preventDefault();locate()});return d}});
+new LocCtl({position:'topright'}).addTo(map);
+const HereCtl=L.Control.extend({onAdd(){const d=L.DomUtil.create('div','here');d.id='here';d.hidden=true;d.setAttribute('role','status');L.DomEvent.disableClickPropagation(d);return d}});
+new HereCtl({position:'topleft'}).addTo(map);
 map.on('baselayerchange',e=>{st.layer=e.name;save()});
 map.on('overlayadd overlayremove',()=>{st.over=Object.keys(over).filter(n=>map.hasLayer(over[n]));save()});
 const mapRO=new ResizeObserver(()=>map.invalidateSize());mapRO.observe($('#map'));
@@ -394,7 +401,7 @@ async function recompute(){
   const g=++gen;save();renderMarkers();renderList();
   const n=st.wps.length,todo=[];segs=[];
   for(let i=0;i<n-1;i++){const k=segKey(i);if(cache.has(k))segs[i]=cache.get(k);else{segs[i]=null;todo.push(i)}}
-  drawRoute();stats();if(n<2){prof=null;drawProfile();setStatus('');return}
+  drawRoute();stats();if(loc)updateHere();if(n<2){prof=null;drawProfile();setStatus('');return}
   const trailJobs=todo.filter(i=>st.wps[i+1].mode!=='straight').length;
   if(trailJobs)setStatus(`Snapping ${trailJobs} leg${trailJobs>1?'s':''} to trails…`);
   let idx=0,fails=0,lastErr='';
@@ -426,7 +433,7 @@ async function elevate(g){
     catch(err){src='Elevation service unreachable; showing only elevations from the route data'}
   }
   if(g!==gen)return;
-  prof={d,e:e.every(v=>v==null)?null:e,ll,tot,src:e.every(v=>v==null)?'':src};stats();drawProfile();
+  prof={d,e:e.every(v=>v==null)?null:e,ll,tot,src:e.every(v=>v==null)?'':src};stats();drawProfile();if(loc)updateHere();
 }
 
 /* ---------- stats & profile ---------- */
@@ -471,6 +478,7 @@ function drawProfile(){
     +dt.map((t,i)=>`<text class="tick" x="${X(t*unitD)}" y="${H-6}" text-anchor="${i===0?'start':'middle'}">${t}${i===dt.length-1?(imp()?' mi':' km'):''}</text>`).join('');
   svg.innerHTML=`<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ROUTE}" stop-opacity=".38"/><stop offset="1" stop-color="${ROUTE}" stop-opacity=".04"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#pg)"/><path d="${line}" fill="none" stroke="${ROUTE}" stroke-width="2.2" stroke-linejoin="round"/><g id="hv" style="display:none"><line class="hv-line" y1="${T}" y2="${T+ih}"/><circle r="4.5" fill="${ROUTE}" stroke="#fff" stroke-width="2"/><rect class="hv-box" rx="6" height="22" y="${T}"/><text class="hv-txt" y="${T+15}"></text></g>`;
   geo={Lp,iw,X,Y,es};
+  if(hereState&&Math.abs(hereState.tot-prof.tot)<1){const x=X(hereState.along),v=profAt(hereState.along);svg.insertAdjacentHTML('beforeend',`<line x1="${x}" x2="${x}" y1="${T}" y2="${T+ih}" stroke="#1e88e5" stroke-width="2"/>${v!=null?`<circle cx="${x}" cy="${Y(cv(v))}" r="5.5" fill="#1e88e5" stroke="#fff" stroke-width="2.5"/>`:''}`)}
 }
 function hover(e){
   if(!geo||!prof)return;const r=svg.getBoundingClientRect(),f=Math.max(0,Math.min(1,(e.clientX-r.left-geo.Lp)/geo.iw));
@@ -600,7 +608,7 @@ const need=()=>{if(st.wps.length<2){toast('Draw a route with at least two points
 /* ---------- controls ---------- */
 function showTab(t){st.tab=t;save();document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.t===t)));['draw','describe','files'].forEach(x=>$('#t-'+x).hidden=x!==t)}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.t)));
-document.querySelectorAll('.units button').forEach(b=>b.addEventListener('click',()=>{st.units=b.dataset.u;save();stats();drawProfile()}));
+document.querySelectorAll('.units button').forEach(b=>b.addEventListener('click',()=>{st.units=b.dataset.u;save();stats();drawProfile();if(loc)updateHere()}));
 $('#name').addEventListener('input',e=>{st.name=e.target.value;save()});
 document.querySelectorAll('input[name=mode]').forEach(r=>{r.checked=r.value===st.mode;r.addEventListener('change',()=>{st.mode=r.value;save()})});
 $('#profile').value=st.profile;$('#profile').addEventListener('change',e=>{st.profile=e.target.value;recompute()});
@@ -624,12 +632,65 @@ mapEl.addEventListener('dragover',e=>{e.preventDefault();mapEl.classList.add('dr
 mapEl.addEventListener('dragleave',()=>mapEl.classList.remove('drop'));
 mapEl.addEventListener('drop',e=>{e.preventDefault();mapEl.classList.remove('drop');const f=e.dataTransfer.files[0];if(f)importFile(f)});
 
+/* ---------- where am I ---------- */
+let loc=null,locWatch=null,locMk=null,locAcc=null,lastAlong=null,centerNext=false,hereState=null;
+const fmtShort=m=>imp()?(m<402?Math.round(m*3.28084).toLocaleString()+' ft':fmtD(m)):(m<1000?Math.round(m)+' m':fmtD(m));
+function locate(){
+  if(locWatch!=null){if(loc)map.setView([loc.lat,loc.lon],Math.max(map.getZoom(),15));return}
+  if(!('geolocation' in navigator))return toast('This browser has no location access');
+  if(!window.isSecureContext)return toast('Location only works when the page is opened over https');
+  centerNext=true;const h=$('#here');h.hidden=false;h.innerHTML='<span>Finding you…</span>';
+  locWatch=navigator.geolocation.watchPosition(onPos,onPosErr,{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+  document.querySelector('.locbtn').classList.add('on');
+}
+function stopLocate(){
+  if(locWatch!=null)navigator.geolocation.clearWatch(locWatch);locWatch=null;loc=null;lastAlong=null;hereState=null;
+  if(locMk)locMk.remove();if(locAcc)locAcc.remove();locMk=locAcc=null;$('#here').hidden=true;document.querySelector('.locbtn').classList.remove('on');drawProfile();
+}
+function onPosErr(e){
+  if(e.code===1){stopLocate();return toast('Location access was declined. Allow it for this site in your browser settings.')}
+  if(!loc){$('#here').innerHTML='<span>Still looking for a GPS fix…</span><button class="x" aria-label="Stop">×</button>';$('#here .x').onclick=stopLocate}
+}
+function onPos(p){
+  const c=p.coords;loc={lat:c.latitude,lon:c.longitude,acc:c.accuracy};const ll=[loc.lat,loc.lon];
+  if(!locMk){locAcc=L.circle(ll,{radius:loc.acc,color:'#1e88e5',weight:1,fillOpacity:.12,interactive:false}).addTo(map);locMk=L.circleMarker(ll,{radius:8,color:'#fff',weight:3,fillColor:'#1e88e5',fillOpacity:1,interactive:false}).addTo(map)}
+  else{locAcc.setLatLng(ll).setRadius(loc.acc);locMk.setLatLng(ll)}
+  if(centerNext){centerNext=false;map.setView(ll,Math.max(map.getZoom(),15))}
+  updateHere();
+}
+function snapToRoute(p){
+  const pts=fullPts();if(pts.length<2)return null;
+  const kx=111320*Math.cos(p[0]*rad),ky=110540,cum=cumul(pts),c=[];
+  for(let i=0;i<pts.length-1;i++){
+    const ax=(pts[i][1]-p[1])*kx,ay=(pts[i][0]-p[0])*ky,bx=(pts[i+1][1]-p[1])*kx,by=(pts[i+1][0]-p[0])*ky,dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy;
+    const t=L2?Math.max(0,Math.min(1,-(ax*dx+ay*dy)/L2)):0;c.push({off:Math.hypot(ax+t*dx,ay+t*dy),along:cum[i]+t*(cum[i+1]-cum[i])});
+  }
+  const best=Math.min(...c.map(x=>x.off)),pool=c.filter(x=>x.off<=best+25);
+  const pick=lastAlong==null?pool.reduce((a,b)=>a.along<=b.along?a:b):pool.reduce((a,b)=>Math.abs(a.along-lastAlong)<=Math.abs(b.along-lastAlong)?a:b);
+  return{off:pick.off,along:pick.along,tot:cum[cum.length-1]};
+}
+function profAt(d){if(!prof||!prof.e)return null;const f=Math.max(0,Math.min(1,d/prof.tot))*(prof.e.length-1),k=Math.floor(f),a=prof.e[k],b=prof.e[Math.min(k+1,prof.e.length-1)];return a==null||b==null?(a??b):a+(b-a)*(f-k)}
+function updateHere(){
+  if(!loc)return;const h=$('#here');h.hidden=false;
+  const s=snapToRoute([loc.lat,loc.lon]),acc=`<small>GPS ±${fmtShort(loc.acc)}</small>`;let html;hereState=null;
+  if(!s)html=`<span><b>You are here</b> ${acc}</span>`;
+  else if(s.off>Math.max(150,loc.acc)){html=`<span><b>${fmtShort(s.off)} off the route</b> ${acc}</span>`}
+  else{
+    lastAlong=s.along;hereState=s;const left=s.tot-s.along;let extra='';
+    const fresh=prof&&prof.e&&Math.abs(prof.tot-s.tot)<1;
+    if(fresh){const k=Math.round(s.along/prof.tot*(prof.e.length-1)),up=climb(prof.e.slice(k)).up,el=profAt(s.along);extra=` · ${fmtE(el)} · about ${fmtT(left,up)} left`}
+    html=`<span><b>${fmtD(s.along)} done, ${fmtD(left)} to go</b>${extra} ${acc}</span>`;
+  }
+  h.innerHTML=html+'<button class="x" aria-label="Stop showing my location">×</button>';h.querySelector('.x').onclick=stopLocate;
+  drawProfile();
+}
+
 /* ---------- start ---------- */
 $('#name').value=st.name;$('#script').value=st.script||EXAMPLE;showTab(st.tab||'draw');
 if(st.wps.length){fit();recompute()}
 else if(!st.seen){runScript(EXAMPLE,true)}
 else{recompute()}
-window.TS={runScript,parseCoord,parseGPX,parseGeoJSON,lineToWps,simplify,climb,cumul,toGPX,toGeoJSON,toScript,st:()=>st,nice};
+window.TS={runScript,snapToRoute,parseCoord,parseGPX,parseGeoJSON,lineToWps,simplify,climb,cumul,toGPX,toGeoJSON,toScript,st:()=>st,nice};
 }
 </script>
 </body>
