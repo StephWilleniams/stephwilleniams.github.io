@@ -6,6 +6,20 @@
 # url: a path in this repo (e.g. /llm-fun/r-naught/, or a PDF in llm-fun/<slug>/) or a full URL.
 # image: a path in this repo or a full URL. If it fails to load, the card shows the name instead.
 
+- slug: trail-sketch
+  name: Trail Sketch
+  kind: Tool
+  date: 2026-11-19
+  url: /llm-fun/trail-sketch/
+  blurb: >-
+    A hike route mapper on topo maps. Tap to draw a route that snaps to real trails, or paste
+    a short route script (Claude can write one from a hike description), and get distance,
+    ascent, an elevation profile and a GPX file.
+  made: Built by Claude in one evening, November 2026, on Leaflet, BRouter and Open-Meteo.
+  tags: [Hiking, Maps, GPX, Claude]
+  image: /images/llm-fun/trail-sketch.jpg
+  image_alt: A topo map with a magenta loop over Dakota Ridge and Red Rocks, beside a route summary and elevation profile
+
 - slug: r-naught
   name: R-Naught
   kind: Game
